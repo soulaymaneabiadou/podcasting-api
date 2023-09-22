@@ -1,0 +1,14 @@
+# Base on https://www.toptal.com/developers/gitignore/api/go
+
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+go.work
+
+vendor/
+tmp/
