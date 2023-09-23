@@ -28,14 +28,3 @@ func (u *User) BeforeSave(db *gorm.DB) error {
 
 	return err
 }
-
-func (u *User) BeforeUpdate(tx *gorm.DB) error {
-	var err error
-
-	if u.Password != "" {
-		u.Password, err = hasher.HashPassword(u.Password)
-		tx.Statement.SetColumn("Password", u.Password)
-	}
-
-	return err
-}
