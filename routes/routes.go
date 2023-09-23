@@ -8,7 +8,7 @@ func RegisterRoutes(g *gin.RouterGroup) {
 	healthRoutes(g)
 
 	// public
-	// authRoutes(g)
+	authRoutes(g)
 
 	// auth middleware
 	// g.Use(middleware.Authenticate())
