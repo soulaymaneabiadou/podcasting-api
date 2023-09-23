@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"podcast/database"
+	"podcast/hasher"
 	"podcast/types"
 
 	"gorm.io/gorm"
@@ -78,7 +79,9 @@ func (ur *UsersRepository) Create(u types.CreateUserInput) (types.User, error) {
 	return user, nil
 }
 
-func (ur *UsersRepository) Update(user types.User, input types.UpdateUserInput) error {
+func (ur *UsersRepository) Update(user types.User, input types.UpdateUserInput) (types.User, error) {
+	var err error
+
 	payload := types.User{
 		Name:                input.Name,
 		Email:               input.Email,
@@ -87,12 +90,19 @@ func (ur *UsersRepository) Update(user types.User, input types.UpdateUserInput) 
 		ResetPasswordExpire: input.ResetPasswordExpire,
 	}
 
-	if err := database.DB.Model(&user).Updates(payload).Error; err != nil {
-		log.Println(err)
-		return err
+	if payload.Password != "" {
+		payload.Password, err = hasher.HashPassword(payload.Password)
+		if err != nil {
+			return user, err
+		}
 	}
 
-	return nil
+	if err := database.DB.Model(&user).Updates(payload).Error; err != nil {
+		log.Println(err)
+		return user, err
+	}
+
+	return user, nil
 }
 
 func (ur *UsersRepository) Destroy(user types.User) (bool, error) {
