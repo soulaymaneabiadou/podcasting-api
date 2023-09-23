@@ -14,7 +14,7 @@ type App struct {
 
 func init() {
 	database.Connect()
-	// database.Migrate() // should be enabled on only new database
+	database.Migrate() // should be enabled on only new database
 }
 
 func (a *App) Serve() {
