@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"podcast/models"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -32,7 +33,7 @@ func Connect() {
 }
 
 func Migrate() {
-	err := DB.AutoMigrate()
+	err := DB.AutoMigrate(&models.User{})
 
 	if err != nil {
 		log.Fatal("failed to migrate all database tables", err)
