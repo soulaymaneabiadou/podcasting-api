@@ -46,3 +46,23 @@ func Migrate() {
 
 	log.Println("migrated all database tables successfully")
 }
+
+type Paginator struct {
+	Limit int `json:"limit"`
+	Page  int `json:"page"`
+}
+
+func Paginate(p Paginator) *gorm.DB {
+	if p.Limit == 0 {
+		p.Limit = 10
+	}
+
+	if p.Page < 1 {
+		p.Page = 1
+	}
+
+	return DB.Scopes(func(db *gorm.DB) *gorm.DB {
+		offset := (p.Page - 1) * p.Limit
+		return db.Offset(offset).Limit(p.Limit)
+	})
+}

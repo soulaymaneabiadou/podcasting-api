@@ -52,7 +52,7 @@ func TestGetAll(t *testing.T) {
 	setupReposTests(t)
 	defer tests.Teardown()
 
-	users, err := ur.GetAll()
+	users, err := ur.GetAll(nil)
 
 	if err != nil {
 		t.Fatal(err.Error())
