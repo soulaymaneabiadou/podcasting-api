@@ -15,15 +15,18 @@ import (
 )
 
 var (
-	ur       = NewUsersRepository(database.DB)
-	err      error
-	user     models.User
-	email    string = "test12@testing.com"
-	password string = "123456789"
+	ur           = NewUsersRepository(database.DB)
+	err          error
+	user         models.User
+	name         string     = "Tester"
+	email        string     = "test12@testing.com"
+	password     string     = "123456789"
+	creatorRole  types.Role = types.CREATOR_ROLE
+	listenerRole types.Role = types.LISTENER_ROLE
 )
 
 func setupReposTests(t *testing.T) {
-	user, err = ur.Create(types.CreateUserInput{Email: email, Password: password})
+	user, err = ur.Create(types.CreateUserInput{Name: name, Email: email, Password: password, Role: listenerRole})
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -32,10 +35,17 @@ func setupReposTests(t *testing.T) {
 		t.Fatalf("A user document should have been created")
 	}
 
+	if user.Name != name {
+		t.Fatalf("The user's name mismatch, want %s, got %s", name, user.Name)
+	}
+
 	if user.Email != email {
 		t.Fatalf("The user's email mismatch, want %s, got %s", email, user.Email)
 	}
 
+	if user.Role != string(listenerRole) {
+		t.Fatalf("The user's role mismatch, want %s, got %s", string(listenerRole), user.Role)
+	}
 }
 
 func TestGetAll(t *testing.T) {

@@ -69,6 +69,7 @@ func (ur *UsersRepository) Create(u types.CreateUserInput) (types.User, error) {
 		Name:     u.Name,
 		Email:    u.Email,
 		Password: u.Password,
+		Role:     string(u.Role),
 	}
 
 	if err := database.DB.Create(&user).Error; err != nil {

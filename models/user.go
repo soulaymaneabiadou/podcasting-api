@@ -17,6 +17,7 @@ type User struct {
 	Password            string    `json:"-" gorm:"type:varchar(255);not null"`
 	ResetPasswordToken  string    `json:"-" gorm:"type:varchar(255);null"`
 	ResetPasswordExpire time.Time `json:"-"`
+	Role                string    `json:"role" gorm:"type:role;default:'listener'" sql:"type:Role"`
 }
 
 func (u *User) BeforeSave(db *gorm.DB) error {
