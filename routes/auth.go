@@ -9,6 +9,7 @@ import (
 
 func authRoutes(r *gin.RouterGroup) {
 	g := r.Group("/auth")
+	// TODO: DI
 	ac := controllers.NewAuthController()
 
 	g.POST("/signup", ac.SignUp)

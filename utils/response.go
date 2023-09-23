@@ -131,8 +131,19 @@ func UnauthorizedResponse(c *gin.Context) {
 		Errors:  map[string]interface{}{},
 	}
 
-	ClearAuthCookies(c)
 	c.JSON(http.StatusUnauthorized, res)
+	c.Abort()
+}
+
+func ForbiddenResponse(c *gin.Context, msg string) {
+	res := response{
+		Message: msg,
+		Success: false,
+		Data:    nil,
+		Errors:  map[string]interface{}{},
+	}
+
+	c.JSON(http.StatusForbidden, res)
 	c.Abort()
 }
 

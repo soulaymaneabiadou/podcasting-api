@@ -16,6 +16,7 @@ type AuthController struct {
 	as *services.AuthService
 }
 
+// TODO: DI
 func NewAuthController() *AuthController {
 	repo := repositories.NewUsersRepository(database.DB)
 	srv := services.NewAuthService(repo)
