@@ -34,6 +34,7 @@ func (u *User) BeforeUpdate(tx *gorm.DB) error {
 
 	if u.Password != "" {
 		u.Password, err = hasher.HashPassword(u.Password)
+		tx.Statement.SetColumn("Password", u.Password)
 	}
 
 	return err
