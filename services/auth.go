@@ -24,12 +24,7 @@ func (as *AuthService) Signup(u types.SignupInput) (types.User, error) {
 		return types.User{}, errors.New("email already exists")
 	}
 
-	data := types.CreateUserInput{
-		Name:     u.Name,
-		Email:    u.Email,
-		Password: u.Password,
-		Role:     types.CREATOR_ROLE,
-	}
+	data := types.CreateUserInput{Name: u.Name, Email: u.Email, Password: u.Password}
 
 	user, err = as.ur.Create(data)
 	if err != nil {
