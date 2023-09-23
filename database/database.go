@@ -33,6 +33,11 @@ func Connect() {
 }
 
 func Migrate() {
+	DB.Exec(`CREATE TYPE Role AS ENUM (
+		'listener',
+		'creator'
+	);`)
+
 	err := DB.AutoMigrate(&models.User{})
 
 	if err != nil {
