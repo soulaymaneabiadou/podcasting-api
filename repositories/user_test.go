@@ -52,7 +52,7 @@ func TestGetAll(t *testing.T) {
 	setupReposTests(t)
 	defer tests.Teardown()
 
-	users, err := ur.GetAll(nil)
+	users, err := ur.GetAll(database.Paginator{Limit: 10, Page: 1})
 
 	if err != nil {
 		t.Fatal(err.Error())

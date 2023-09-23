@@ -20,20 +20,8 @@ func NewUsersRepository(db *gorm.DB) *UsersRepository {
 	return &UsersRepository{database: db}
 }
 
-func (ur *UsersRepository) GetAll(pagination interface{}) ([]types.User, error) {
+func (ur *UsersRepository) GetAll(p database.Paginator) ([]types.User, error) {
 	var users []types.User
-
-	if pagination == nil {
-		if err := database.DB.Find(&users).Error; err != nil {
-			log.Println(err)
-			return []types.User{}, err
-		}
-	}
-
-	p := database.Paginator{
-		Limit: pagination.(database.Paginator).Limit,
-		Page:  pagination.(database.Paginator).Page,
-	}
 
 	if err := database.Paginate(p).Find(&users).Error; err != nil {
 		log.Println(err)
