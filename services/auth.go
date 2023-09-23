@@ -24,9 +24,17 @@ func (as *AuthService) Signup(u types.SignupInput) (types.User, error) {
 		return types.User{}, errors.New("email already exists")
 	}
 
-	data := types.CreateUserInput{Name: u.Name, Email: u.Email, Password: u.Password}
+	data := types.CreateUserInput{
+		Name:     u.Name,
+		Email:    u.Email,
+		Password: u.Password,
+		Role:     types.CREATOR_ROLE,
+	}
 
 	user, err = as.ur.Create(data)
+	if err != nil {
+		return types.User{}, errors.New("an error occured, please try again later with valid information")
+	}
 
 	// TODO: send welcome email here
 
