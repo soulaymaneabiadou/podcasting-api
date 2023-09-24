@@ -31,7 +31,7 @@ func (as *AuthService) Signup(u types.SignupInput) (types.User, error) {
 		return types.User{}, errors.New("an error occured, please try again later with valid information")
 	}
 
-	// TODO: send welcome email here
+	go SendWelcomeEmail(user)
 
 	return user, nil
 }
