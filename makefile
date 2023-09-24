@@ -11,6 +11,13 @@ dev:
 	JWT_ACCESS_COOKIE_EXPIRE=5 \
 	JWT_REFRESH_EXPIRE=7 \
 	JWT_REFRESH_COOKIE_EXPIRE=7 \
+	SMTP_IDENTITY="Podcast Platform" \
+	SMTP_USERNAME=221546739a5c13 \
+	SMTP_PASSWORD=4fb36f4ddffd25 \
+	SMTP_HOST=smtp.mailtrap.io \
+	SMTP_PORT=2525 \
+	SMTP_FROM=noreply@podcast.dev \
+	PUBLIC_URL=http://localhost:5000 \
 	air
 
 up:
