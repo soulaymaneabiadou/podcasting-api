@@ -1,12 +1,11 @@
-{{template "base" .}} {{define "content"}}
+{{template "header" .}}
 <table role="presentation" class="main">
-  <!-- START MAIN CONTENT AREA -->
   <tr>
     <td class="wrapper">
       <table role="presentation" border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td>
-            <p>Hi {{ .Name}},</p>
+            <p>Hello {{ .Name}}</p>
             <p>Welcome to Podcast Platform</p>
 
             <table
@@ -46,7 +45,5 @@
       </table>
     </td>
   </tr>
-
-  <!-- END MAIN CONTENT AREA -->
 </table>
-{{end}}
+{{template "footer"}}

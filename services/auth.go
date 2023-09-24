@@ -91,7 +91,7 @@ func (as *AuthService) UpdatePassword(id string, input types.UpdatePasswordInput
 		return false, err
 	}
 
-	// TODO: send password updated email
+	go SendPasswordUpdatedEmail(user)
 
 	return true, nil
 }
@@ -116,7 +116,7 @@ func (as *AuthService) ForgotPassword(input types.ForgotPasswordInput) (string, 
 		ResetPasswordExpire: time.Now().Add(time.Minute * 10),
 	})
 
-	// TODO: send the token via email
+	go SendPasswordResetTokenEmail(user, token)
 
 	return token, nil
 }
@@ -136,7 +136,7 @@ func (as *AuthService) ResetPassword(token string, password string) (bool, error
 		ResetPasswordExpire: time.Now(),
 	})
 
-	// TODO: send password has been resetted email
+	go SendPasswordResettedEmail(user)
 
 	return true, nil
 }
