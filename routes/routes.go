@@ -6,13 +6,6 @@ import (
 
 func RegisterRoutes(g *gin.RouterGroup) {
 	healthRoutes(g)
-
-	// public
 	authRoutes(g)
-
-	// auth middleware
-	// g.Use(middleware.Authenticate())
-
-	// private
-	// userRoutes(g)
+	podcastsRoutes(g)
 }
