@@ -15,9 +15,9 @@ import (
 func CreateAuthService() *services.AuthService {
 	wire.Build(
 		services.NewAuthService,
-		wire.Bind(new(gateway.EmailGateway), new(*gateway.SMTPGateway)),
+		wire.Bind(new(gateway.EmailGateway), new(*gateway.SMTPMailer)),
 		services.NewEmailService,
-		gateway.NewSMTPGateway,
+		gateway.NewSMTPMailer,
 		repositories.NewUsersRepository,
 		database.Connection,
 		// AuthServiceSet,

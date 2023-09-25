@@ -7,13 +7,13 @@ import (
 	"os"
 )
 
-type SMTPGateway struct{}
+type SMTPMailer struct{}
 
-func NewSMTPGateway() *SMTPGateway {
-	return &SMTPGateway{}
+func NewSMTPMailer() *SMTPMailer {
+	return &SMTPMailer{}
 }
 
-func (s *SMTPGateway) SendEmail(p EmailPayload) {
+func (s *SMTPMailer) SendEmail(p EmailPayload) {
 	identity := os.Getenv("SMTP_IDENTITY")
 	host := os.Getenv("SMTP_HOST")
 	port := os.Getenv("SMTP_PORT")

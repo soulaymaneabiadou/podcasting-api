@@ -18,8 +18,8 @@ import (
 func CreateAuthService() *services.AuthService {
 	db := database.Connection()
 	usersRepository := repositories.NewUsersRepository(db)
-	smtpGateway := gateway.NewSMTPGateway()
-	emailService := services.NewEmailService(smtpGateway)
+	smtpMailer := gateway.NewSMTPMailer()
+	emailService := services.NewEmailService(smtpMailer)
 	authService := services.NewAuthService(usersRepository, emailService)
 	return authService
 }

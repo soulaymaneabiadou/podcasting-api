@@ -13,10 +13,10 @@ import (
 
 func CreateAuthService() *AuthService {
 	wire.Build(
-		wire.Bind(new(gateway.EmailGateway), new(*gateway.SMTPGateway)),
+		wire.Bind(new(gateway.EmailGateway), new(*gateway.SMTPMailer)),
 		NewAuthService,
 		NewEmailService,
-		gateway.NewSMTPGateway,
+		gateway.NewSMTPMailer,
 		repositories.NewUsersRepository,
 		database.Connection,
 		// AuthServiceSet,

@@ -17,8 +17,8 @@ import (
 func CreateAuthService() *AuthService {
 	db := database.Connection()
 	usersRepository := repositories.NewUsersRepository(db)
-	smtpGateway := gateway.NewSMTPGateway()
-	emailService := NewEmailService(smtpGateway)
+	smtpMailer := gateway.NewSMTPMailer()
+	emailService := NewEmailService(smtpMailer)
 	authService := NewAuthService(usersRepository, emailService)
 	return authService
 }

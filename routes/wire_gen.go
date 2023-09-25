@@ -19,8 +19,8 @@ import (
 func CreateAuthController() *controllers.AuthController {
 	db := database.Connection()
 	usersRepository := repositories.NewUsersRepository(db)
-	smtpGateway := gateway.NewSMTPGateway()
-	emailService := services.NewEmailService(smtpGateway)
+	smtpMailer := gateway.NewSMTPMailer()
+	emailService := services.NewEmailService(smtpMailer)
 	authService := services.NewAuthService(usersRepository, emailService)
 	authController := controllers.NewAuthController(authService)
 	return authController
