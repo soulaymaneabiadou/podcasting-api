@@ -5,6 +5,7 @@ go 1.21.0
 require (
 	github.com/google/wire v0.5.0
 	github.com/gosimple/slug v1.13.1
+	github.com/sendgrid/sendgrid-go v3.13.0+incompatible
 	gorm.io/driver/postgres v1.5.2
 )
 
@@ -12,6 +13,7 @@ require (
 	github.com/gosimple/unidecode v1.0.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
+	github.com/sendgrid/rest v2.6.9+incompatible // indirect
 )
 
 require (

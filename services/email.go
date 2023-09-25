@@ -24,7 +24,7 @@ func (es *EmailService) SendWelcomeEmail(user types.User) {
 	}
 
 	es.g.SendEmail(gateway.EmailPayload{
-		Receiver: user.Email,
+		Receiver: user,
 		Subject:  subject,
 		Template: "welcome.html",
 		Data:     data,
@@ -41,7 +41,7 @@ func (es *EmailService) SendPasswordUpdatedEmail(user types.User) {
 	}
 
 	es.g.SendEmail(gateway.EmailPayload{
-		Receiver: user.Email,
+		Receiver: user,
 		Subject:  subject,
 		Template: "password-updated.html",
 		Data:     data,
@@ -57,7 +57,7 @@ func (es *EmailService) SendPasswordResetTokenEmail(user types.User, token strin
 	}
 
 	es.g.SendEmail(gateway.EmailPayload{
-		Receiver: user.Email,
+		Receiver: user,
 		Subject:  subject,
 		Template: "password-reset.html",
 		Data:     data,
@@ -73,7 +73,7 @@ func (es *EmailService) SendPasswordResettedEmail(user types.User) {
 	}
 
 	es.g.SendEmail(gateway.EmailPayload{
-		Receiver: user.Email,
+		Receiver: user,
 		Subject:  subject,
 		Template: "password-resetted.html",
 		Data:     data,

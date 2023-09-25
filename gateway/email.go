@@ -5,11 +5,12 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"podcast/types"
 	"text/template"
 )
 
 type EmailPayload struct {
-	Receiver string
+	Receiver types.User
 	Subject  string
 	Template string
 	Data     any

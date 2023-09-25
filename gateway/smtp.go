@@ -19,15 +19,15 @@ func (s *SMTPMailer) SendEmail(p EmailPayload) {
 	port := os.Getenv("SMTP_PORT")
 	username := os.Getenv("SMTP_USERNAME")
 	password := os.Getenv("SMTP_PASSWORD")
-	from := os.Getenv("SMTP_FROM")
+	from := os.Getenv("FROM_EMAIL")
 
-	to := []string{p.Receiver}
+	to := []string{p.Receiver.Email}
 	body := parseTemplate(p.Template, p.Data)
 
 	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 
 	msg := []byte("From:" + from + "\r\n" +
-		"To:" + p.Receiver + "\r\n" +
+		"To:" + p.Receiver.Email + "\r\n" +
 		"Subject:" + p.Subject + "\r\n" +
 		mime +
 		body.String())
@@ -37,8 +37,8 @@ func (s *SMTPMailer) SendEmail(p EmailPayload) {
 
 	err := smtp.SendMail(addr, auth, from, to, msg)
 	if err == nil {
-		log.Println("email has been sent")
+		log.Println("email has been sent via smtp")
 	} else {
-		log.Println("error occured while sending the email", err.Error())
+		log.Println("error occured while sending the email via smtp", err.Error())
 	}
 }

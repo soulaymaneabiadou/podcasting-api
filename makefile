@@ -17,7 +17,9 @@ dev:
 	SMTP_PASSWORD=4fb36f4ddffd25 \
 	SMTP_HOST=smtp.mailtrap.io \
 	SMTP_PORT=2525 \
-	SMTP_FROM=noreply@podcast.dev \
+	SMTP_FROM_EMAIL=noreply@podcast.dev \
+	SMTP_FROM_NAME="Podcast Platform" \
+	SENDGRID_API_KEY="" \
 	PUBLIC_URL=http://localhost:5000 \
 	air
 
@@ -42,7 +44,9 @@ test:
 	SMTP_PASSWORD=4fb36f4ddffd25 \
 	SMTP_HOST=smtp.mailtrap.io \
 	SMTP_PORT=2525 \
-	SMTP_FROM=noreply@podcast.dev \
+	FROM_EMAIL=noreply@podcast.dev \
+	FROM_NAME="Podcast Platform" \
+	SENDGRID_API_KEY="" \
 	PUBLIC_URL=http://localhost:5000 \
 	go test ./...
 
@@ -64,7 +68,9 @@ run:
 	SMTP_PASSWORD=4fb36f4ddffd25 \
 	SMTP_HOST=smtp.mailtrap.io \
 	SMTP_PORT=2525 \
-	SMTP_FROM=noreply@podcast.dev \
+	SMTP_FROM_EMAIL=noreply@podcast.dev \
+	SMTP_FROM_NAME="Podcast Platform" \
+	SENDGRID_API_KEY="" \
 	PUBLIC_URL=http://localhost:5000 \
 	go run .
 
@@ -88,7 +94,9 @@ prod:
 	SMTP_PASSWORD=4fb36f4ddffd25 \
 	SMTP_HOST=smtp.mailtrap.io \
 	SMTP_PORT=2525 \
-	SMTP_FROM=noreply@podcast.dev \
+	SMTP_FROM_EMAIL=noreply@podcast.dev \
+	SMTP_FROM_NAME="Podcast Platform" \
+	SENDGRID_API_KEY="" \
 	PUBLIC_URL=http://localhost:5000 \
 	./podcast
 
