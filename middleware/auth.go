@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"log"
 	"strings"
 
@@ -81,13 +80,12 @@ func AuthenticateRefreshToken() gin.HandlerFunc {
 
 func Authorize(roles []types.Role) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		u, _ := c.Get("user")
-		p := u.(utils.JwtPayload)
+		uid, _ := utils.GetCtxUser(c)
 
 		// TODO: DI
 		as := services.NewAuthService(repositories.NewUsersRepository(database.DB))
 
-		user, err := as.GetUser(fmt.Sprintf("%d", p.ID))
+		user, err := as.GetUser(uid)
 
 		if err != nil || !slices.Contains(roles, types.Role(user.Role)) {
 			utils.ForbiddenResponse(c, "You lack the necesseary role to proceed")
