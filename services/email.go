@@ -15,7 +15,7 @@ func NewEmailService(g gateway.EmailGateway) *EmailService {
 	return &EmailService{g: g}
 }
 
-func (e *EmailService) SendWelcomeEmail(user types.User) {
+func (es *EmailService) SendWelcomeEmail(user types.User) {
 	subject := "Welcome to Podcasting Platform"
 	data := map[string]string{
 		"Subject": subject,
@@ -23,7 +23,7 @@ func (e *EmailService) SendWelcomeEmail(user types.User) {
 		"URL":     os.Getenv("PUBLIC_URL"),
 	}
 
-	e.g.SendEmail(gateway.EmailPayload{
+	es.g.SendEmail(gateway.EmailPayload{
 		Receiver: user.Email,
 		Subject:  subject,
 		Template: "welcome.html",
@@ -31,7 +31,7 @@ func (e *EmailService) SendWelcomeEmail(user types.User) {
 	})
 }
 
-func (e *EmailService) SendPasswordUpdatedEmail(user types.User) {
+func (es *EmailService) SendPasswordUpdatedEmail(user types.User) {
 	subject := "[Podcasting Platform] Password Updated"
 	data := map[string]string{
 		"Subject": subject,
@@ -40,7 +40,7 @@ func (e *EmailService) SendPasswordUpdatedEmail(user types.User) {
 		"URL":     os.Getenv("PUBLIC_URL") + "/auth/me",
 	}
 
-	e.g.SendEmail(gateway.EmailPayload{
+	es.g.SendEmail(gateway.EmailPayload{
 		Receiver: user.Email,
 		Subject:  subject,
 		Template: "password-updated.html",
@@ -48,7 +48,7 @@ func (e *EmailService) SendPasswordUpdatedEmail(user types.User) {
 	})
 }
 
-func (e *EmailService) SendPasswordResetTokenEmail(user types.User, token string) {
+func (es *EmailService) SendPasswordResetTokenEmail(user types.User, token string) {
 	subject := "[Podcasting Platform] Password Reset Link"
 	data := map[string]string{
 		"Subject": subject,
@@ -56,7 +56,7 @@ func (e *EmailService) SendPasswordResetTokenEmail(user types.User, token string
 		"URL":     os.Getenv("PUBLIC_URL") + "/auth/resetpassword/" + token,
 	}
 
-	e.g.SendEmail(gateway.EmailPayload{
+	es.g.SendEmail(gateway.EmailPayload{
 		Receiver: user.Email,
 		Subject:  subject,
 		Template: "password-reset.html",
@@ -64,7 +64,7 @@ func (e *EmailService) SendPasswordResetTokenEmail(user types.User, token string
 	})
 }
 
-func (e *EmailService) SendPasswordResettedEmail(user types.User) {
+func (es *EmailService) SendPasswordResettedEmail(user types.User) {
 	subject := "[Podcasting Platform] Password Resetted Successfully"
 	data := map[string]string{
 		"Subject": subject,
@@ -72,7 +72,7 @@ func (e *EmailService) SendPasswordResettedEmail(user types.User) {
 		"URL":     os.Getenv("PUBLIC_URL") + "/auth/me",
 	}
 
-	e.g.SendEmail(gateway.EmailPayload{
+	es.g.SendEmail(gateway.EmailPayload{
 		Receiver: user.Email,
 		Subject:  subject,
 		Template: "password-resetted.html",

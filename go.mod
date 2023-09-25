@@ -3,6 +3,7 @@ module podcast
 go 1.21.0
 
 require (
+	github.com/google/wire v0.5.0
 	github.com/gosimple/slug v1.13.1
 	gorm.io/driver/postgres v1.5.2
 )

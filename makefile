@@ -1,4 +1,5 @@
 dev:
+# go install github.com/cosmtrek/air@latest
 	PORT=5000 \
 	POSTGRES_HOST=localhost \
 	POSTGRES_PORT=5432 \
@@ -90,3 +91,9 @@ prod:
 	SMTP_FROM=noreply@podcast.dev \
 	PUBLIC_URL=http://localhost:5000 \
 	./podcast
+
+wire:
+# go install github.com/google/wire/cmd/wire@latest
+# wire gen ./middleware ./services ./routes
+# wire gen ./...
+	wire ./...

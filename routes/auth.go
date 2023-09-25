@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"podcast/controllers"
 	"podcast/middleware"
 
 	"github.com/gin-gonic/gin"
@@ -9,8 +8,7 @@ import (
 
 func authRoutes(r *gin.RouterGroup) {
 	g := r.Group("/auth")
-	// TODO: DI
-	ac := controllers.NewAuthController()
+	ac := CreateAuthController()
 
 	g.POST("/signup", ac.SignUp)
 	g.POST("/signin", ac.SignIn)

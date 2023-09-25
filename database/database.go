@@ -10,21 +10,30 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
+type Paginator struct {
+	Limit int `json:"limit"`
+	Page  int `json:"page"`
+}
+
+var db *gorm.DB
+
+func Connection() *gorm.DB {
+	return db
+}
 
 func Connect() {
 	var err error
 
 	host := os.Getenv("POSTGRES_HOST")
 	port := os.Getenv("POSTGRES_PORT")
-	db := os.Getenv("POSTGRES_DB")
+	dbname := os.Getenv("POSTGRES_DB")
 	user := os.Getenv("POSTGRES_USER")
 	password := os.Getenv("POSTGRES_PASSWORD")
 
 	conn := "host=%s user=%s password=%s dbname=%s port=%s sslmode=disable"
-	dsn := fmt.Sprintf(conn, host, user, password, db, port)
+	dsn := fmt.Sprintf(conn, host, user, password, dbname, port)
 
-	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("failed to connect to the database, ", err)
 	}
@@ -33,23 +42,18 @@ func Connect() {
 }
 
 func Migrate() {
-	DB.Exec(`CREATE TYPE Role AS ENUM (
+	db.Exec(`CREATE TYPE Role AS ENUM (
 		'listener',
 		'creator'
 	);`)
 
-	err := DB.AutoMigrate(&models.User{}, &models.Podcast{})
+	err := db.AutoMigrate(&models.User{}, &models.Podcast{})
 
 	if err != nil {
 		log.Fatal("failed to migrate all database tables", err)
 	}
 
 	log.Println("migrated all database tables successfully")
-}
-
-type Paginator struct {
-	Limit int `json:"limit"`
-	Page  int `json:"page"`
 }
 
 func Paginate(p Paginator) *gorm.DB {
@@ -61,7 +65,7 @@ func Paginate(p Paginator) *gorm.DB {
 		p.Page = 1
 	}
 
-	return DB.Scopes(func(db *gorm.DB) *gorm.DB {
+	return db.Scopes(func(db *gorm.DB) *gorm.DB {
 		offset := (p.Page - 1) * p.Limit
 		return db.Offset(offset).Limit(p.Limit)
 	})

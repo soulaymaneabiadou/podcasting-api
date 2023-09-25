@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	ur           = NewUsersRepository(database.DB)
+	ur           = NewUsersRepository(database.Connection())
 	err          error
 	user         models.User
 	name         string     = "Tester"

@@ -22,7 +22,7 @@ func NewPodcastsRepository(db *gorm.DB) *PodcastsRepository {
 func (ur *PodcastsRepository) Count() (int64, error) {
 	var count int64
 
-	if err := database.DB.Find(&types.Podcast{}).Count(&count).Error; err != nil {
+	if err := ur.db.Find(&types.Podcast{}).Count(&count).Error; err != nil {
 		log.Println(err.Error())
 		return 0, err
 	}

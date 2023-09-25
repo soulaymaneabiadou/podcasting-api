@@ -22,13 +22,13 @@ type EmailGateway interface {
 func parseTemplate(tpl string, data any) bytes.Buffer {
 	t, err := parseTemplateDir("templates")
 	if err != nil {
-		log.Fatal("could not parse the templates dir", err)
+		log.Fatal("could not parse the templates dir, err: ", err)
 	}
 
 	var body bytes.Buffer
 	err = t.ExecuteTemplate(&body, tpl, &data)
 	if err != nil {
-		log.Fatal("could not parse the template", err)
+		log.Fatal("could not parse the template, err: ", err)
 	}
 
 	return body

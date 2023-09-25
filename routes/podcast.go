@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"podcast/controllers"
 	"podcast/middleware"
 	"podcast/types"
 
@@ -10,8 +9,7 @@ import (
 
 func podcastsRoutes(r *gin.RouterGroup) {
 	g := r.Group("/podcasts")
-	// TODO: DI
-	pc := controllers.NewPodcastsController()
+	pc := CreatePodcastsController()
 
 	g.GET("/", pc.GetPodcasts)
 	g.GET("/:id", pc.GetPodcast)

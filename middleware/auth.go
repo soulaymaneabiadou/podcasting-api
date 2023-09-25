@@ -4,10 +4,6 @@ import (
 	"log"
 	"strings"
 
-	"podcast/database"
-	"podcast/gateway"
-	"podcast/repositories"
-	"podcast/services"
 	"podcast/types"
 	"podcast/utils"
 
@@ -83,8 +79,7 @@ func Authorize(roles []types.Role) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		uid, _ := utils.GetCtxUser(c)
 
-		// TODO: DI
-		as := services.NewAuthService(repositories.NewUsersRepository(database.DB), services.NewEmailService(gateway.NewSMTPGateway()))
+		as := CreateAuthService()
 
 		user, err := as.GetUser(uid)
 

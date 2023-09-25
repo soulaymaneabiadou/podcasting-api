@@ -8,7 +8,15 @@ import (
 )
 
 func deleteDatabase() {
-	database.DB.Unscoped().Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&models.User{})
+	database.Connection().
+		Unscoped().
+		Session(&gorm.Session{AllowGlobalUpdate: true}).
+		Delete(&models.User{})
+
+	database.Connection().
+		Unscoped().
+		Session(&gorm.Session{AllowGlobalUpdate: true}).
+		Delete(&models.Podcast{})
 }
 
 func init() {

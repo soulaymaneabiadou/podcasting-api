@@ -3,9 +3,6 @@ package controllers
 import (
 	"errors"
 
-	"podcast/database"
-	"podcast/gateway"
-	"podcast/repositories"
 	"podcast/services"
 	"podcast/types"
 	"podcast/utils"
@@ -17,13 +14,8 @@ type AuthController struct {
 	as *services.AuthService
 }
 
-// TODO: DI
-func NewAuthController() *AuthController {
-	repo := repositories.NewUsersRepository(database.DB)
-	es := services.NewEmailService(gateway.NewSMTPGateway())
-	srv := services.NewAuthService(repo, es)
-
-	return &AuthController{as: srv}
+func NewAuthController(as *services.AuthService) *AuthController {
+	return &AuthController{as: as}
 }
 
 func (ac *AuthController) SignUp(c *gin.Context) {

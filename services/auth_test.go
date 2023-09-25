@@ -4,16 +4,13 @@ import (
 	"fmt"
 	"testing"
 
-	"podcast/database"
-	"podcast/gateway"
 	"podcast/models"
-	"podcast/repositories"
 	"podcast/tests"
 	"podcast/types"
 )
 
 var (
-	as       = NewAuthService(repositories.NewUsersRepository(database.DB), NewEmailService(gateway.NewSMTPGateway()))
+	as       = CreateAuthService()
 	user     models.User
 	name     string = "John Doe"
 	email    string = "john@testing.com"

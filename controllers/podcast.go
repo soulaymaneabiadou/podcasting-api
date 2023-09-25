@@ -5,8 +5,6 @@ import (
 	"log"
 	"strconv"
 
-	"podcast/database"
-	"podcast/repositories"
 	"podcast/services"
 	"podcast/types"
 	"podcast/utils"
@@ -15,22 +13,18 @@ import (
 )
 
 type PodcastsController struct {
-	as *services.PodcastsService
+	ps *services.PodcastsService
 }
 
-// TODO: DI
-func NewPodcastsController() *PodcastsController {
-	repo := repositories.NewPodcastsRepository(database.DB)
-	srv := services.NewPodcastsService(repo)
-
-	return &PodcastsController{as: srv}
+func NewPodcastsController(ps *services.PodcastsService) *PodcastsController {
+	return &PodcastsController{ps: ps}
 }
 
 func (pc *PodcastsController) GetPodcasts(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))    // offset
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10")) // per page
 
-	count, podcasts, err := pc.as.GetPodcasts(types.Paginator{Limit: limit, Page: page})
+	count, podcasts, err := pc.ps.GetPodcasts(types.Paginator{Limit: limit, Page: page})
 	pagination := utils.PaginationInput{Page: page, Limit: limit, Count: count}
 
 	if err != nil {
@@ -44,7 +38,7 @@ func (pc *PodcastsController) GetPodcasts(c *gin.Context) {
 func (pc *PodcastsController) GetPodcast(c *gin.Context) {
 	id := c.Param("id")
 
-	podcast, err := pc.as.GetPodcastById(id)
+	podcast, err := pc.ps.GetPodcastById(id)
 	if err != nil {
 		utils.NotFoundResponse(c)
 		return
@@ -63,7 +57,7 @@ func (pc *PodcastsController) CreatePodcast(c *gin.Context) {
 	u, _ := c.Get("user")
 	data.CreatorId = u.(utils.JwtPayload).ID
 
-	podcast, err := pc.as.CreatePodcast(data)
+	podcast, err := pc.ps.CreatePodcast(data)
 	if err != nil {
 		utils.ErrorsResponse(c, err)
 		return
@@ -82,7 +76,7 @@ func (pc *PodcastsController) UpdatePodcast(c *gin.Context) {
 		return
 	}
 
-	podcast, err := pc.as.UpdatePodcast(uid, id, data)
+	podcast, err := pc.ps.UpdatePodcast(uid, id, data)
 	if err != nil {
 		utils.ErrorsResponse(c, err)
 		return
@@ -95,7 +89,7 @@ func (pc *PodcastsController) DeletePodcast(c *gin.Context) {
 	id := c.Param("id")
 	uid, _ := utils.GetCtxUser(c)
 
-	res, err := pc.as.DeletePodcast(uid, id)
+	res, err := pc.ps.DeletePodcast(uid, id)
 	if err != nil {
 		utils.NotFoundResponse(c)
 		return
