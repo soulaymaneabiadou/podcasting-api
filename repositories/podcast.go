@@ -68,6 +68,10 @@ func (ur *PodcastsRepository) Create(p types.CreatePodcastInput) (types.Podcast,
 		Name:        p.Name,
 		Description: p.Description,
 		CreatorId:   p.CreatorId,
+		Picture:     p.Picture,
+		SocialLinks: p.SocialLinks,
+		Hosts:       p.Hosts,
+		Tags:        p.Tags,
 	}
 
 	if err := ur.db.Create(&podcast).Error; err != nil {
@@ -81,6 +85,10 @@ func (ur *PodcastsRepository) Create(p types.CreatePodcastInput) (types.Podcast,
 func (ur *PodcastsRepository) Update(podcast types.Podcast, input types.UpdatePodcastInput) (types.Podcast, error) {
 	payload := types.Podcast{
 		Description: input.Description,
+		Picture:     input.Picture,
+		SocialLinks: input.SocialLinks,
+		Hosts:       input.Hosts,
+		Tags:        input.Tags,
 	}
 
 	if payload.Name != "" {
