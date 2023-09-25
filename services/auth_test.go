@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"podcast/database"
+	"podcast/gateway"
 	"podcast/models"
 	"podcast/repositories"
 	"podcast/tests"
@@ -12,7 +13,7 @@ import (
 )
 
 var (
-	as       = NewAuthService(repositories.NewUsersRepository(database.DB))
+	as       = NewAuthService(repositories.NewUsersRepository(database.DB), NewEmailService(gateway.NewSMTPGateway()))
 	user     models.User
 	name     string = "John Doe"
 	email    string = "john@testing.com"

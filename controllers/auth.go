@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"podcast/database"
+	"podcast/gateway"
 	"podcast/repositories"
 	"podcast/services"
 	"podcast/types"
@@ -19,7 +20,8 @@ type AuthController struct {
 // TODO: DI
 func NewAuthController() *AuthController {
 	repo := repositories.NewUsersRepository(database.DB)
-	srv := services.NewAuthService(repo)
+	es := services.NewEmailService(gateway.NewSMTPGateway())
+	srv := services.NewAuthService(repo, es)
 
 	return &AuthController{as: srv}
 }

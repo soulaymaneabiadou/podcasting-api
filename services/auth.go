@@ -12,10 +12,11 @@ import (
 
 type AuthService struct {
 	ur *repositories.UsersRepository
+	es *EmailService
 }
 
-func NewAuthService(ur *repositories.UsersRepository) *AuthService {
-	return &AuthService{ur: ur}
+func NewAuthService(ur *repositories.UsersRepository, es *EmailService) *AuthService {
+	return &AuthService{ur: ur, es: es}
 }
 
 func (as *AuthService) Signup(u types.SignupInput) (types.User, error) {
@@ -31,7 +32,7 @@ func (as *AuthService) Signup(u types.SignupInput) (types.User, error) {
 		return types.User{}, errors.New("an error occured, please try again later with valid information")
 	}
 
-	go SendWelcomeEmail(user)
+	go as.es.SendWelcomeEmail(user)
 
 	return user, nil
 }
@@ -91,7 +92,7 @@ func (as *AuthService) UpdatePassword(id string, input types.UpdatePasswordInput
 		return false, err
 	}
 
-	go SendPasswordUpdatedEmail(user)
+	go as.es.SendPasswordUpdatedEmail(user)
 
 	return true, nil
 }
@@ -116,7 +117,7 @@ func (as *AuthService) ForgotPassword(input types.ForgotPasswordInput) (string, 
 		ResetPasswordExpire: time.Now().Add(time.Minute * 10),
 	})
 
-	go SendPasswordResetTokenEmail(user, token)
+	go as.es.SendPasswordResetTokenEmail(user, token)
 
 	return token, nil
 }
@@ -136,7 +137,7 @@ func (as *AuthService) ResetPassword(token string, password string) (bool, error
 		ResetPasswordExpire: time.Now(),
 	})
 
-	go SendPasswordResettedEmail(user)
+	go as.es.SendPasswordResettedEmail(user)
 
 	return true, nil
 }
