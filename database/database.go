@@ -38,7 +38,7 @@ func Migrate() {
 		'creator'
 	);`)
 
-	err := DB.AutoMigrate(&models.User{})
+	err := DB.AutoMigrate(&models.User{}, &models.Podcast{})
 
 	if err != nil {
 		log.Fatal("failed to migrate all database tables", err)
