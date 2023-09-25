@@ -27,11 +27,11 @@ type PaginationInput struct {
 }
 
 type response struct {
-	Message string      `json:"message"`
-	Success bool        `json:"success"`
-	Data    interface{} `json:"data"`
-	Errors  interface{} `json:"errors"`
-	// Pagination Pagination  `json:"pagination"`
+	Message    string      `json:"message"`
+	Success    bool        `json:"success"`
+	Data       interface{} `json:"data"`
+	Errors     interface{} `json:"errors"`
+	Pagination Pagination  `json:"pagination"`
 }
 
 func createPagination(i PaginationInput) Pagination {
@@ -45,18 +45,18 @@ func createPagination(i PaginationInput) Pagination {
 	}
 }
 
-// func PaginatedResponse(c *gin.Context, data interface{}, i PaginationInput) {
-// 	pagination := createPagination(i)
-// 	res := response{
-// 		Message:    "",
-// 		Success:    true,
-// 		Data:       data,
-// 		Errors:     nil,
-// 		Pagination: pagination,
-// 	}
+func PaginatedResponse(c *gin.Context, data interface{}, i PaginationInput) {
+	pagination := createPagination(i)
+	res := response{
+		Message:    "",
+		Success:    true,
+		Data:       data,
+		Errors:     nil,
+		Pagination: pagination,
+	}
 
-// 	c.JSON(http.StatusOK, res)
-// }
+	c.JSON(http.StatusOK, res)
+}
 
 func SetAccessCookie(c *gin.Context, access string) {
 	accessCookieExp, _ := strconv.Atoi(os.Getenv("JWT_ACCESS_COOKIE_EXPIRE"))
