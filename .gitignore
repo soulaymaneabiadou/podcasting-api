@@ -12,3 +12,4 @@ go.work
 
 vendor/
 tmp/
+podcast
