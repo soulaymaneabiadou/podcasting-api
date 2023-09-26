@@ -11,14 +11,14 @@ import (
 
 type Podcast struct {
 	Model
-	Name        string      `json:"name" gorm:"type:varchar(255);not null;unique"`
-	Slug        string      `json:"slug" gorm:"type:varchar(255);not null;unique"`
-	Description string      `json:"description" gorm:"type:varchar(255);not null;unique"`
-	CreatorId   uint        `json:"creator_id" gorm:"type:varchar(255);not null;index"`
-	Picture     string      `json:"picture" gorm:"type:varchar(255)"`
-	SocialLinks StringSlice `json:"social_links" gorm:"type:varchar(255)"`
-	Hosts       StringSlice `json:"hosts" gorm:"type:varchar(255)"`
-	Tags        StringSlice `json:"tags" gorm:"type:varchar(255)"`
+	Name        string            `json:"name" gorm:"type:varchar(255);not null;unique"`
+	Slug        string            `json:"slug" gorm:"type:varchar(255);not null;unique"`
+	Description string            `json:"description" gorm:"type:varchar(255);not null;unique"`
+	CreatorId   uint              `json:"creator_id" gorm:"type:varchar(255);not null;index"`
+	Picture     string            `json:"picture" gorm:"type:varchar(255)"`
+	SocialLinks map[string]string `json:"social_links" gorm:"type:JSON"`
+	Hosts       StringSlice       `json:"hosts" gorm:"type:varchar(255)"`
+	Tags        StringSlice       `json:"tags" gorm:"type:varchar(255)"`
 
 	Creator User `json:"creator" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
