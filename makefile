@@ -1,5 +1,6 @@
 dev:
 # go install github.com/cosmtrek/air@latest
+	rm -rf tmp/
 	PORT=5000 \
 	POSTGRES_HOST=localhost \
 	POSTGRES_PORT=5432 \
