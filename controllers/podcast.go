@@ -21,8 +21,8 @@ func NewPodcastsController(ps *services.PodcastsService) *PodcastsController {
 }
 
 func (pc *PodcastsController) GetPodcasts(c *gin.Context) {
-	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))    // offset
-	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10")) // per page
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
 
 	count, podcasts, err := pc.ps.GetPodcasts(types.Paginator{Limit: limit, Page: page})
 	pagination := utils.PaginationInput{Page: page, Limit: limit, Count: count}
@@ -30,13 +30,14 @@ func (pc *PodcastsController) GetPodcasts(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 		utils.ErrorsResponse(c, errors.New("an error occured while getting podcasts, please try again later"))
+		return
 	}
 
 	utils.PaginatedResponse(c, podcasts, pagination)
 }
 
 func (pc *PodcastsController) GetPodcast(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("pid")
 
 	podcast, err := pc.ps.GetPodcastById(id)
 	if err != nil {
@@ -67,7 +68,7 @@ func (pc *PodcastsController) CreatePodcast(c *gin.Context) {
 }
 
 func (pc *PodcastsController) UpdatePodcast(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("pid")
 	uid, _ := utils.GetCtxUser(c)
 
 	var data types.UpdatePodcastInput
@@ -86,7 +87,7 @@ func (pc *PodcastsController) UpdatePodcast(c *gin.Context) {
 }
 
 func (pc *PodcastsController) DeletePodcast(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("pid")
 	uid, _ := utils.GetCtxUser(c)
 
 	res, err := pc.ps.DeletePodcast(uid, id)

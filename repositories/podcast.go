@@ -44,7 +44,7 @@ func (ur *PodcastsRepository) GetAll(p types.Paginator) ([]types.Podcast, error)
 func (ur *PodcastsRepository) GetById(id string) (types.Podcast, error) {
 	var podcast types.Podcast
 
-	if err := ur.db.Where("id=?", id).Preload("Creator").First(&podcast).Error; err != nil {
+	if err := ur.db.Preload("Creator").Preload("Episodes", "visibility IN (?)", "public").Where("id=?", id).First(&podcast).Error; err != nil {
 		log.Println(err.Error())
 		return types.Podcast{}, errors.New("podcast not found")
 	}
@@ -55,7 +55,7 @@ func (ur *PodcastsRepository) GetById(id string) (types.Podcast, error) {
 func (ur *PodcastsRepository) GetBySlug(slug string) (types.Podcast, error) {
 	var podcast types.Podcast
 
-	if err := ur.db.Where("slug=?", slug).First(&podcast).Error; err != nil {
+	if err := ur.db.Preload("Creator").Preload("Episodes", "visibility IN (?)", "public").Where("slug=?", slug).First(&podcast).Error; err != nil {
 		log.Println(err, podcast)
 		return types.Podcast{}, err
 	}

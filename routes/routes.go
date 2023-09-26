@@ -8,4 +8,5 @@ func RegisterRoutes(g *gin.RouterGroup) {
 	healthRoutes(g)
 	authRoutes(g)
 	podcastsRoutes(g)
+	episodesRoutes(g)
 }

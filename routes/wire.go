@@ -39,3 +39,17 @@ func CreatePodcastsController() *controllers.PodcastsController {
 
 	return &controllers.PodcastsController{}
 }
+
+func CreateEpisodesController() *controllers.EpisodesController {
+	wire.Build(
+		controllers.NewEpisodesController,
+		services.NewEpisodesService,
+		repositories.NewEpisodesRepository,
+		services.NewPodcastsService,
+		repositories.NewPodcastsRepository,
+		database.Connection,
+		// EpisodesControllerSet,
+	)
+
+	return &controllers.EpisodesController{}
+}

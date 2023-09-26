@@ -2,7 +2,7 @@ package types
 
 type SignupInput struct {
 	Name     string `json:"name" binding:"required"`
-	Email    string `json:"email" binding:"required,email"`
+	Email    string `json:"email" binding:"required,email" gorm:"unique"`
 	Password string `json:"password" binding:"required,min=8,alphanum"`
 }
 
@@ -12,8 +12,8 @@ type SigninInput struct {
 }
 
 type UpdateDetailsInput struct {
-	Name  string `json:"name" binding:"-"`
-	Email string `json:"email" binding:"email"`
+	Name  string `json:"name" binding:"omitempty"`
+	Email string `json:"email" binding:"omitempty,email"`
 }
 
 type ForgotPasswordInput struct {

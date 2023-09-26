@@ -25,7 +25,12 @@ func (as *AuthService) Signup(u types.SignupInput) (types.User, error) {
 		return types.User{}, errors.New("email already exists")
 	}
 
-	data := types.CreateUserInput{Name: u.Name, Email: u.Email, Password: u.Password}
+	data := types.CreateUserInput{
+		Name:     u.Name,
+		Email:    u.Email,
+		Password: u.Password,
+		Role:     types.CREATOR_ROLE,
+	}
 
 	user, err = as.ur.Create(data)
 	if err != nil {
@@ -68,7 +73,7 @@ func (as *AuthService) UpdateDetails(id string, input types.UpdateDetailsInput) 
 		return user, err
 	}
 
-	user, err = as.ur.Update(user, types.UpdateUserInput{Email: input.Email})
+	user, err = as.ur.Update(user, types.UpdateUserInput{Name: input.Name, Email: input.Email})
 	if err != nil {
 		log.Println(err)
 		return types.User{}, err

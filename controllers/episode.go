@@ -1,0 +1,129 @@
+package controllers
+
+import (
+	"errors"
+	"log"
+	"strconv"
+
+	"podcast/services"
+	"podcast/types"
+	"podcast/utils"
+
+	"github.com/gin-gonic/gin"
+)
+
+type EpisodesController struct {
+	es *services.EpisodesService
+}
+
+func NewEpisodesController(es *services.EpisodesService) *EpisodesController {
+	return &EpisodesController{es: es}
+}
+
+func (pc *EpisodesController) GetPodcastEpisodes(c *gin.Context) {
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	pid := c.Param("pid")
+
+	count, podcasts, err := pc.es.GetPodcastEpisodes(pid, types.Paginator{Limit: limit, Page: page})
+	pagination := utils.PaginationInput{Page: page, Limit: limit, Count: count}
+
+	if err != nil {
+		log.Println(err.Error())
+		utils.ErrorsResponse(c, errors.New("an error occured while getting podcast episodes, please try again later"))
+		return
+	}
+
+	utils.PaginatedResponse(c, podcasts, pagination)
+}
+
+func (pc *EpisodesController) GetPodcastEpisode(c *gin.Context) {
+	id := c.Param("eid")
+
+	episode, err := pc.es.GetPodcastEpisodeById(id)
+	if err != nil {
+		utils.NotFoundResponse(c)
+		return
+	}
+
+	utils.SuccessResponse(c, episode)
+}
+
+func (pc *EpisodesController) CreatePodcastEpisode(c *gin.Context) {
+	var data types.CreateEpisodeInput
+	if err := c.ShouldBindJSON(&data); err != nil {
+		utils.ErrorsResponse(c, err)
+		return
+	}
+
+	user, _ := c.Get("user")
+	data.CreatorId = user.(utils.JwtPayload).ID
+
+	pid, _ := strconv.ParseUint(c.Param("pid"), 0, 64)
+	data.PodcastId = uint(pid)
+
+	episode, err := pc.es.CreatePodcastEpisode(data)
+	if err != nil {
+		utils.ErrorsResponse(c, err) // errors.New("invalid input supplied")
+		return
+	}
+
+	utils.SuccessResponse(c, episode)
+}
+
+func (pc *EpisodesController) UpdatePodcastEpisode(c *gin.Context) {
+	id := c.Param("eid")
+	uid, _ := utils.GetCtxUser(c)
+
+	var data types.UpdateEpisodeInput
+	if err := c.ShouldBindJSON(&data); err != nil {
+		utils.ErrorsResponse(c, err)
+		return
+	}
+
+	episode, err := pc.es.UpdatePodcastEpisode(uid, id, data)
+	if err != nil {
+		utils.ErrorsResponse(c, err)
+		return
+	}
+
+	utils.SuccessResponse(c, episode)
+}
+
+func (pc *EpisodesController) PublishPodcastEpisode(c *gin.Context) {
+	id := c.Param("eid")
+	uid, _ := utils.GetCtxUser(c)
+
+	var data types.PublishEpisodeInput
+	if err := c.ShouldBindJSON(&data); err != nil {
+		utils.ErrorsResponse(c, err)
+		return
+	}
+
+	episode, err := pc.es.PublishPodcastEpisode(uid, id, data)
+	if err != nil {
+		utils.ErrorsResponse(c, err)
+		return
+	}
+
+	utils.SuccessResponse(c, episode)
+}
+
+func (pc *EpisodesController) DeletePodcastEpisode(c *gin.Context) {
+	id := c.Param("eid")
+	uid, _ := utils.GetCtxUser(c)
+
+	res, err := pc.es.DeletePodcastEpisode(uid, id)
+
+	if err != nil && res == true {
+		utils.ErrorsResponse(c, err)
+		return
+	}
+
+	if err != nil {
+		utils.NotFoundResponse(c)
+		return
+	}
+
+	utils.SuccessResponse(c, res)
+}

@@ -47,7 +47,14 @@ func Migrate() {
 		'creator'
 	);`)
 
-	err := db.AutoMigrate(&models.User{}, &models.Podcast{})
+	db.Exec(`CREATE TYPE Visibility AS ENUM (
+		'draft',
+		'public',
+		'protected',
+		'archived'
+	);`)
+
+	err := db.AutoMigrate(&models.User{}, &models.Podcast{}, &models.Episode{})
 
 	if err != nil {
 		log.Fatal("failed to migrate all database tables", err)

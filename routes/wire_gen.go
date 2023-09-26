@@ -33,3 +33,13 @@ func CreatePodcastsController() *controllers.PodcastsController {
 	podcastsController := controllers.NewPodcastsController(podcastsService)
 	return podcastsController
 }
+
+func CreateEpisodesController() *controllers.EpisodesController {
+	db := database.Connection()
+	episodesRepository := repositories.NewEpisodesRepository(db)
+	podcastsRepository := repositories.NewPodcastsRepository(db)
+	podcastsService := services.NewPodcastsService(podcastsRepository)
+	episodesService := services.NewEpisodesService(episodesRepository, podcastsService)
+	episodesController := controllers.NewEpisodesController(episodesService)
+	return episodesController
+}
