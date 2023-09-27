@@ -16,8 +16,10 @@ type Podcast struct {
 	Tags        StringSlice `json:"tags" gorm:"type:varchar(255)"`
 	CreatorId   uint        `json:"creator_id" gorm:"type:varchar(255);not null;index"`
 
-	Creator  User      `json:"creator" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	Episodes []Episode `json:"episodes"`
+	Creator       User           `json:"creator" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Episodes      []Episode      `json:"episodes"`
+	Subscriptions []Subscription `json:"-"`
+	Subscribers   []User         `json:"-" gorm:"many2many:subscriptions"`
 }
 
 func (p *Podcast) BeforeSave(db *gorm.DB) error {

@@ -54,7 +54,21 @@ func Migrate() {
 		'archived'
 	);`)
 
-	err := db.AutoMigrate(&models.User{}, &models.Podcast{}, &models.Episode{})
+	db.Exec(`CREATE TYPE SubscriptionStatus AS ENUM (
+		'active',
+		'cancelled',
+		'trialing'
+	);`)
+
+	err := db.AutoMigrate(
+		&models.User{},
+		&models.Podcast{},
+		&models.Episode{},
+		&models.Account{},
+		&models.Subscription{},
+	)
+
+	db.Exec(`CREATE UNIQUE INDEX unique_user_podcast ON subscriptions (user_id, podcast_id);`)
 
 	if err != nil {
 		log.Fatal("failed to migrate all database tables", err)
