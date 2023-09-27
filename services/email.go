@@ -15,12 +15,28 @@ func NewEmailService(g gateway.EmailGateway) *EmailService {
 	return &EmailService{g: g}
 }
 
-func (es *EmailService) SendWelcomeEmail(user types.User) {
+func (es *EmailService) SendListenerWelcomeEmail(user types.User) {
 	subject := "Welcome to Podcasting Platform"
 	data := map[string]string{
-		"Subject": subject,
-		"Name":    user.Name,
-		"URL":     os.Getenv("PUBLIC_URL"),
+		"Subject":         subject,
+		"Name":            user.Name,
+		"VerificationURL": os.Getenv("PUBLIC_URL") + "/api/v1/auth/verify/<token>",
+	}
+
+	es.g.SendEmail(gateway.EmailPayload{
+		Receiver: user,
+		Subject:  subject,
+		Template: "welcome.html",
+		Data:     data,
+	})
+}
+
+func (es *EmailService) SendCreatorWelcomeEmail(user types.User) {
+	subject := "Thanks for Joining Podcasting Platform"
+	data := map[string]string{
+		"Subject":         subject,
+		"Name":            user.Name,
+		"VerificationURL": os.Getenv("PUBLIC_URL") + "/api/v1/auth/verify/<token>",
 	}
 
 	es.g.SendEmail(gateway.EmailPayload{

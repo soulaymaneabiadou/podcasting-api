@@ -29,15 +29,38 @@ func (as *AuthService) Signup(u types.SignupInput) (types.User, error) {
 		Name:     u.Name,
 		Email:    u.Email,
 		Password: u.Password,
+		Role:     types.LISTENER_ROLE,
+	}
+
+	user, err = as.ur.Create(data)
+	if err != nil {
+		return types.User{}, errors.New("an error occured while signing up, please try again later with valid information")
+	}
+
+	go as.es.SendListenerWelcomeEmail(user)
+
+	return user, nil
+}
+
+func (as *AuthService) Join(u types.SignupInput) (types.User, error) {
+	user, err := as.ur.GetByEmail(u.Email)
+	if user.ID != 0 || err == nil {
+		return types.User{}, errors.New("email already exists")
+	}
+
+	data := types.CreateUserInput{
+		Name:     u.Name,
+		Email:    u.Email,
+		Password: u.Password,
 		Role:     types.CREATOR_ROLE,
 	}
 
 	user, err = as.ur.Create(data)
 	if err != nil {
-		return types.User{}, errors.New("an error occured, please try again later with valid information")
+		return types.User{}, errors.New("an error occured while joining, please try again later with valid information")
 	}
 
-	go as.es.SendWelcomeEmail(user)
+	go as.es.SendCreatorWelcomeEmail(user)
 
 	return user, nil
 }

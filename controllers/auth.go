@@ -34,6 +34,22 @@ func (ac *AuthController) SignUp(c *gin.Context) {
 	utils.SendTokensResponse(c, user)
 }
 
+func (ac *AuthController) Join(c *gin.Context) {
+	var data types.SignupInput
+	if err := c.ShouldBindJSON(&data); err != nil {
+		utils.ErrorsResponse(c, err)
+		return
+	}
+
+	user, err := ac.as.Join(data)
+	if err != nil {
+		utils.ErrorsResponse(c, err)
+		return
+	}
+
+	utils.SendTokensResponse(c, user)
+}
+
 func (ac *AuthController) SignIn(c *gin.Context) {
 	var data types.SigninInput
 	if err := c.ShouldBindJSON(&data); err != nil {

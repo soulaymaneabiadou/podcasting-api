@@ -10,7 +10,8 @@ func authRoutes(r *gin.RouterGroup) {
 	g := r.Group("/auth")
 	ac := CreateAuthController()
 
-	g.POST("/signup", ac.SignUp)
+	g.POST("/join", ac.Join)     // creators
+	g.POST("/signup", ac.SignUp) // listeners
 	g.POST("/signin", ac.SignIn)
 	g.GET("/signout", middleware.Authenticate(), ac.SignOut)
 	g.GET("/refreshtoken", middleware.AuthenticateRefreshToken(), ac.RefreshToken)
