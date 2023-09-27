@@ -6,6 +6,7 @@ require (
 	github.com/google/wire v0.5.0
 	github.com/gosimple/slug v1.13.1
 	github.com/sendgrid/sendgrid-go v3.13.0+incompatible
+	github.com/stripe/stripe-go/v75 v75.7.0
 	gorm.io/driver/postgres v1.5.2
 )
 
