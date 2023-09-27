@@ -13,3 +13,5 @@ go.work
 vendor/
 tmp/
 podcast
+.env*
+!.env.example
