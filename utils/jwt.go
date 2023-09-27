@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"time"
@@ -37,7 +38,12 @@ func createToken(opts tokenOpts) (string, error) {
 }
 
 func CreateAccessToken(sub string, p JwtPayload) (string, error) {
-	expDur, _ := strconv.Atoi(os.Getenv("JWT_ACCESS_EXPIRE"))
+	expDur, err := strconv.Atoi(os.Getenv("JWT_ACCESS_EXPIRE"))
+	if err != nil {
+		log.Println("cannot get jwt access expire, ", err.Error())
+		return "", err
+	}
+
 	exp := time.Now().Add(time.Minute * time.Duration(expDur)) // minutes
 
 	return createToken(tokenOpts{
