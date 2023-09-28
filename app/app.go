@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"podcast/database"
+	"podcast/gateway"
 	"podcast/routes"
 
 	"github.com/gin-gonic/gin"
@@ -14,7 +15,8 @@ type App struct {
 
 func init() {
 	database.Connect()
-	database.Migrate() // should be enabled on only new database
+	database.Migrate() // should be enabled only on a new database
+	gateway.InitializeStripeGateway()
 }
 
 func (a *App) Serve() {
