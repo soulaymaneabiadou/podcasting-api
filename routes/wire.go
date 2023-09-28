@@ -53,3 +53,14 @@ func CreateEpisodesController() *controllers.EpisodesController {
 
 	return &controllers.EpisodesController{}
 }
+
+func CreateWebhooksController() *controllers.WebhooksController {
+	wire.Build(
+		controllers.NewWebhooksController,
+		services.NewStripeService,
+		gateway.NewStripeGateway,
+		// WebhooksControllerSet,
+	)
+
+	return &controllers.WebhooksController{}
+}

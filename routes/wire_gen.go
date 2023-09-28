@@ -43,3 +43,10 @@ func CreateEpisodesController() *controllers.EpisodesController {
 	episodesController := controllers.NewEpisodesController(episodesService)
 	return episodesController
 }
+
+func CreateWebhooksController() *controllers.WebhooksController {
+	stripeGateway := gateway.NewStripeGateway()
+	stripeService := services.NewStripeService(stripeGateway)
+	webhooksController := controllers.NewWebhooksController(stripeService)
+	return webhooksController
+}

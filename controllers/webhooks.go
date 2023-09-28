@@ -3,19 +3,20 @@ package controllers
 import (
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
+	"podcast/services"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v75/webhook"
 )
 
 type WebhooksController struct {
+	ss *services.StripeService
 }
 
-func NeWebhooksController() *WebhooksController {
-	return &WebhooksController{}
+func NewWebhooksController(ss *services.StripeService) *WebhooksController {
+	return &WebhooksController{ss: ss}
 }
 
 func (wc *WebhooksController) HandleStripeWebhooks(c *gin.Context) {
@@ -38,13 +39,7 @@ func (wc *WebhooksController) HandleStripeWebhooks(c *gin.Context) {
 		return
 	}
 
-	switch event.Type {
-	case "customer.subscription.created":
-		log.Println("sub created", event.Data.Object)
-
-	default:
-		fmt.Fprintf(os.Stderr, "unhandled stripe event type: %s\n", event.Type)
-	}
+	wc.ss.HandleWebhookEvent(event)
 
 	c.Writer.WriteHeader(http.StatusOK)
 }
