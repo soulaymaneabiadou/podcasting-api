@@ -42,6 +42,17 @@ func (ur *UsersRepository) GetById(id string) (types.User, error) {
 	return user, nil
 }
 
+func (ur *UsersRepository) GetByStripeAccountId(aid string) (types.User, error) {
+	var user types.User
+
+	if err := ur.db.Where("stripe_account_id=?", aid).First(&user).Error; err != nil {
+		log.Println(err)
+		return types.User{}, errors.New("user not found by account id")
+	}
+
+	return user, nil
+}
+
 func (ur *UsersRepository) GetByEmail(email string) (types.User, error) {
 	var user types.User
 
@@ -88,6 +99,11 @@ func (ur *UsersRepository) Update(user types.User, input types.UpdateUserInput) 
 		Password:            input.Password,
 		ResetPasswordToken:  input.ResetPasswordToken,
 		ResetPasswordExpire: input.ResetPasswordExpire,
+		StripeCustomerId:    input.StripeCustomerId,
+		StripeAccountId:     input.StripeAccountId,
+		ChargesEnabled:      input.ChargesEnabled,
+		TransfersEnabled:    input.TransfersEnabled,
+		DetailsSubmitted:    input.DetailsSubmitted,
 	}
 
 	if payload.Password != "" {

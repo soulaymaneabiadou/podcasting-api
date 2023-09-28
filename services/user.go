@@ -32,3 +32,25 @@ func (us *UsersService) GetUserSubscriptionByPodcast(user types.User, pid string
 func (us *UsersService) SetUserCustomerId(user types.User, cid string) (types.User, error) {
 	return us.ur.Update(user, types.UpdateUserInput{StripeCustomerId: cid})
 }
+
+func (us *UsersService) Update(user types.User, input types.UpdateUserInput) (types.User, error) {
+	return us.ur.Update(user, input)
+}
+
+func (us *UsersService) UpdateStripeInfo(aid string, input types.UpdateUserInput) (types.User, error) {
+	user, err := us.ur.GetByStripeAccountId(aid)
+	if err != nil {
+		return user, err
+	}
+
+	return us.ur.Update(user, input)
+}
+
+func (us *UsersService) SetStripeAccountId(user types.User, aid string) (types.User, error) {
+	return us.Update(user, types.UpdateUserInput{
+		StripeAccountId:  aid,
+		ChargesEnabled:   false,
+		TransfersEnabled: false,
+		DetailsSubmitted: false,
+	})
+}
