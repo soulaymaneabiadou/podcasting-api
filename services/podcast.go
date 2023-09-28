@@ -2,26 +2,34 @@ package services
 
 import (
 	"errors"
+	"fmt"
+	"strconv"
+
 	"podcast/repositories"
 	"podcast/types"
-	"strconv"
 )
 
 type PodcastsService struct {
 	pr *repositories.PodcastsRepository
+	us *UsersService
+	ss *StripeService
 }
 
-func NewPodcastsService(pr *repositories.PodcastsRepository) *PodcastsService {
-	return &PodcastsService{pr: pr}
+func NewPodcastsService(
+	pr *repositories.PodcastsRepository,
+	us *UsersService,
+	ss *StripeService,
+) *PodcastsService {
+	return &PodcastsService{pr: pr, us: us, ss: ss}
 }
 
-func (us *PodcastsService) GetPodcasts(p types.Paginator) (int64, []types.Podcast, error) {
-	count, err := us.pr.Count()
+func (ps *PodcastsService) GetPodcasts(p types.Paginator) (int64, []types.Podcast, error) {
+	count, err := ps.pr.Count()
 	if err != nil {
 		return 0, []types.Podcast{}, err
 	}
 
-	podcasts, err := us.pr.GetAll(p)
+	podcasts, err := ps.pr.GetAll(p)
 	if err != nil {
 		return 0, []types.Podcast{}, err
 	}
@@ -29,8 +37,8 @@ func (us *PodcastsService) GetPodcasts(p types.Paginator) (int64, []types.Podcas
 	return count, podcasts, nil
 }
 
-func (us *PodcastsService) GetPodcastById(id string) (types.Podcast, error) {
-	podcast, err := us.pr.GetById(id)
+func (ps *PodcastsService) GetPodcastById(id string) (types.Podcast, error) {
+	podcast, err := ps.pr.GetById(id)
 	if err != nil {
 		return podcast, err
 	}
@@ -38,8 +46,8 @@ func (us *PodcastsService) GetPodcastById(id string) (types.Podcast, error) {
 	return podcast, nil
 }
 
-func (us *PodcastsService) GetPodcastBySlug(uid string, slug string) (types.Podcast, error) {
-	podcast, err := us.pr.GetBySlug(slug)
+func (ps *PodcastsService) GetPodcastBySlug(uid string, slug string) (types.Podcast, error) {
+	podcast, err := ps.pr.GetBySlug(slug)
 	if err != nil {
 		return podcast, err
 	}
@@ -47,12 +55,12 @@ func (us *PodcastsService) GetPodcastBySlug(uid string, slug string) (types.Podc
 	return podcast, nil
 }
 
-func (us *PodcastsService) CreatePodcast(d types.CreatePodcastInput) (types.Podcast, error) {
-	return us.pr.Create(d)
+func (ps *PodcastsService) CreatePodcast(d types.CreatePodcastInput) (types.Podcast, error) {
+	return ps.pr.Create(d)
 }
 
-func (us *PodcastsService) UpdatePodcast(uid string, id string, i types.UpdatePodcastInput) (types.Podcast, error) {
-	podcast, err := us.GetPodcastById(id)
+func (ps *PodcastsService) UpdatePodcast(uid string, id string, i types.UpdatePodcastInput) (types.Podcast, error) {
+	podcast, err := ps.GetPodcastById(id)
 	if err != nil {
 		return podcast, err
 	}
@@ -62,12 +70,12 @@ func (us *PodcastsService) UpdatePodcast(uid string, id string, i types.UpdatePo
 		return podcast, errors.New("podcast not found")
 	}
 
-	podcast, err = us.pr.Update(podcast, i)
+	podcast, err = ps.pr.Update(podcast, i)
 	return podcast, err
 }
 
-func (us *PodcastsService) DeletePodcast(uid string, id string) (bool, error) {
-	podcast, err := us.GetPodcastById(id)
+func (ps *PodcastsService) DeletePodcast(uid string, id string) (bool, error) {
+	podcast, err := ps.GetPodcastById(id)
 	if err != nil {
 		return false, err
 	}
@@ -77,5 +85,60 @@ func (us *PodcastsService) DeletePodcast(uid string, id string) (bool, error) {
 		return false, errors.New("podcast not found")
 	}
 
-	return us.pr.Destroy(podcast)
+	return ps.pr.Destroy(podcast)
+}
+
+func (ps *PodcastsService) GetPodcastCreator(id string) (types.Account, error) {
+	podcast, err := ps.GetPodcastById(id)
+	if err != nil {
+		return types.Account{}, err
+	}
+
+	account, err := ps.us.GetUserAccountById(fmt.Sprint(podcast.CreatorId))
+
+	return account, nil
+}
+
+func (ps *PodcastsService) Subscribe(uid, pid string) (string, error) {
+	user, err := ps.us.GetUserById(uid)
+	if err != nil {
+		return "", err
+	}
+
+	sub, err := ps.us.GetUserSubscriptionByPodcast(user, pid)
+	if err != nil {
+		return "", err
+	}
+
+	if sub.ID != 0 {
+		return "", errors.New("you have already subscribed to this podcast")
+	}
+
+	if user.StripeCustomerId == "" {
+		cus, err := ps.ss.CreateCustomer(user)
+		if err != nil {
+			return "", err
+		}
+		user, err = ps.us.SetUserCustomerId(user, cus.ID)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	account, err := ps.GetPodcastCreator(pid)
+	if err != nil {
+		return "", err
+	}
+
+	url, err := ps.ss.CreateCustomerCheckoutSession(CustomerCheckoutSessionParams{
+		UserId:           fmt.Sprint(user.ID),
+		CustomerId:       user.StripeCustomerId,
+		CreatorAccountId: account.StripeAccountId,
+		PodcastId:        pid,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return url, nil
 }

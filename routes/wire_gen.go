@@ -7,6 +7,7 @@
 package routes
 
 import (
+	"github.com/google/wire"
 	"podcast/controllers"
 	"podcast/database"
 	"podcast/gateway"
@@ -29,7 +30,13 @@ func CreateAuthController() *controllers.AuthController {
 func CreatePodcastsController() *controllers.PodcastsController {
 	db := database.Connection()
 	podcastsRepository := repositories.NewPodcastsRepository(db)
-	podcastsService := services.NewPodcastsService(podcastsRepository)
+	usersRepository := repositories.NewUsersRepository(db)
+	subscriptionsRepository := repositories.NewSubscriptionsRepository(db)
+	accountsRepository := repositories.NewAccountsRepository(db)
+	usersService := services.NewUsersService(usersRepository, subscriptionsRepository, accountsRepository)
+	stripeGateway := gateway.NewStripeGateway()
+	stripeService := services.NewStripeService(stripeGateway, subscriptionsRepository)
+	podcastsService := services.NewPodcastsService(podcastsRepository, usersService, stripeService)
 	podcastsController := controllers.NewPodcastsController(podcastsService)
 	return podcastsController
 }
@@ -38,7 +45,13 @@ func CreateEpisodesController() *controllers.EpisodesController {
 	db := database.Connection()
 	episodesRepository := repositories.NewEpisodesRepository(db)
 	podcastsRepository := repositories.NewPodcastsRepository(db)
-	podcastsService := services.NewPodcastsService(podcastsRepository)
+	usersRepository := repositories.NewUsersRepository(db)
+	subscriptionsRepository := repositories.NewSubscriptionsRepository(db)
+	accountsRepository := repositories.NewAccountsRepository(db)
+	usersService := services.NewUsersService(usersRepository, subscriptionsRepository, accountsRepository)
+	stripeGateway := gateway.NewStripeGateway()
+	stripeService := services.NewStripeService(stripeGateway, subscriptionsRepository)
+	podcastsService := services.NewPodcastsService(podcastsRepository, usersService, stripeService)
 	episodesService := services.NewEpisodesService(episodesRepository, podcastsService)
 	episodesController := controllers.NewEpisodesController(episodesService)
 	return episodesController
@@ -46,7 +59,13 @@ func CreateEpisodesController() *controllers.EpisodesController {
 
 func CreateWebhooksController() *controllers.WebhooksController {
 	stripeGateway := gateway.NewStripeGateway()
-	stripeService := services.NewStripeService(stripeGateway)
+	db := database.Connection()
+	subscriptionsRepository := repositories.NewSubscriptionsRepository(db)
+	stripeService := services.NewStripeService(stripeGateway, subscriptionsRepository)
 	webhooksController := controllers.NewWebhooksController(stripeService)
 	return webhooksController
 }
+
+// wire.go:
+
+var podcastUserStripeSet = wire.NewSet(services.NewPodcastsService, services.NewUsersService, services.NewStripeService, gateway.NewStripeGateway, repositories.NewUsersRepository, repositories.NewPodcastsRepository, repositories.NewSubscriptionsRepository, repositories.NewAccountsRepository)

@@ -31,8 +31,7 @@ func CreateAuthController() *controllers.AuthController {
 func CreatePodcastsController() *controllers.PodcastsController {
 	wire.Build(
 		controllers.NewPodcastsController,
-		services.NewPodcastsService,
-		repositories.NewPodcastsRepository,
+		podcastUserStripeSet,
 		database.Connection,
 		// PodcastsControllerSet,
 	)
@@ -45,8 +44,7 @@ func CreateEpisodesController() *controllers.EpisodesController {
 		controllers.NewEpisodesController,
 		services.NewEpisodesService,
 		repositories.NewEpisodesRepository,
-		services.NewPodcastsService,
-		repositories.NewPodcastsRepository,
+		podcastUserStripeSet,
 		database.Connection,
 		// EpisodesControllerSet,
 	)
@@ -59,8 +57,21 @@ func CreateWebhooksController() *controllers.WebhooksController {
 		controllers.NewWebhooksController,
 		services.NewStripeService,
 		gateway.NewStripeGateway,
+		repositories.NewSubscriptionsRepository,
+		database.Connection,
 		// WebhooksControllerSet,
 	)
 
 	return &controllers.WebhooksController{}
 }
+
+var podcastUserStripeSet = wire.NewSet(
+	services.NewPodcastsService,
+	services.NewUsersService,
+	services.NewStripeService,
+	gateway.NewStripeGateway,
+	repositories.NewUsersRepository,
+	repositories.NewPodcastsRepository,
+	repositories.NewSubscriptionsRepository,
+	repositories.NewAccountsRepository,
+)

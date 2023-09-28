@@ -27,6 +27,7 @@ type AccountLinkParams struct {
 }
 
 type CheckoutSessionParams struct {
+	UserId           string
 	CustomerId       string
 	CreatorAccountId string
 	PodcastId        string
@@ -124,14 +125,12 @@ func (sg *StripeGateway) CreateCheckoutSession(sp CheckoutSessionParams) (*strip
 		SuccessURL: stripe.String(sp.SuccessUrl),
 		CancelURL:  stripe.String(sp.CancelUrl),
 		Metadata: map[string]string{
-			"user_id":    sp.CustomerId,
-			"creator_id": sp.CreatorAccountId,
+			"user_id":    sp.UserId,
 			"podcast_id": sp.PodcastId,
 		},
 		SubscriptionData: &stripe.CheckoutSessionSubscriptionDataParams{
 			Metadata: map[string]string{
-				"user_id":    sp.CustomerId,
-				"creator_id": sp.CreatorAccountId,
+				"user_id":    sp.UserId,
 				"podcast_id": sp.PodcastId,
 			},
 			OnBehalfOf: &sp.CreatorAccountId,
