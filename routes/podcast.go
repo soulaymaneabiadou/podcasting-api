@@ -21,6 +21,7 @@ func podcastsRoutes(r *gin.RouterGroup) {
 	g.POST("/", pc.CreatePodcast)
 	g.PATCH("/:pid", pc.UpdatePodcast)
 	g.DELETE("/:pid", pc.DeletePodcast)
+	g.POST("/:pid/subscribe", pc.Subscribe)
 
 	g.POST("/:pid/episodes", ec.CreatePodcastEpisode)
 }

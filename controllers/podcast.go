@@ -3,6 +3,7 @@ package controllers
 import (
 	"errors"
 	"log"
+	"net/http"
 	"strconv"
 
 	"podcast/services"
@@ -97,4 +98,17 @@ func (pc *PodcastsController) DeletePodcast(c *gin.Context) {
 	}
 
 	utils.SuccessResponse(c, res)
+}
+
+func (pc *PodcastsController) Subscribe(c *gin.Context) {
+	pid := c.Param("pid")
+	uid, _ := utils.GetCtxUser(c)
+
+	url, err := pc.ps.Subscribe(uid, pid)
+	if err != nil {
+		utils.ErrorsResponse(c, err)
+		return
+	}
+
+	c.Redirect(http.StatusTemporaryRedirect, url)
 }
