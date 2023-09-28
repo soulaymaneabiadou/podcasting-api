@@ -42,5 +42,8 @@ install-deps:
 	go install github.com/cosmtrek/air@latest
 	go install github.com/google/wire/cmd/wire@latest
 
-stripe:
-	stripe listen --forward-to localhost:5000/api/v1/webhooks/stripe
+stripe-listen:
+	stripe listen --forward-to localhost:5000/api/v1/webhooks/stripe --forward-connect-to localhost:5000/api/v1/webhooks/stripe --latest
+
+stripe-trigger:
+	stripe trigger --api-version "2023-08-16" customer.subscription.created
