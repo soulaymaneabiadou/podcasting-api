@@ -88,15 +88,13 @@ func (ps *PodcastsService) DeletePodcast(uid string, id string) (bool, error) {
 	return ps.pr.Destroy(podcast)
 }
 
-func (ps *PodcastsService) GetPodcastCreator(id string) (types.Account, error) {
+func (ps *PodcastsService) GetPodcastCreator(id string) (types.User, error) {
 	podcast, err := ps.GetPodcastById(id)
 	if err != nil {
-		return types.Account{}, err
+		return types.User{}, err
 	}
 
-	account, err := ps.us.GetUserAccountById(fmt.Sprint(podcast.CreatorId))
-
-	return account, nil
+	return ps.us.GetUserById(fmt.Sprint(podcast.CreatorId))
 }
 
 func (ps *PodcastsService) Subscribe(uid, pid string) (string, error) {
@@ -125,7 +123,7 @@ func (ps *PodcastsService) Subscribe(uid, pid string) (string, error) {
 		}
 	}
 
-	account, err := ps.GetPodcastCreator(pid)
+	creator, err := ps.GetPodcastCreator(pid)
 	if err != nil {
 		return "", err
 	}
@@ -133,7 +131,7 @@ func (ps *PodcastsService) Subscribe(uid, pid string) (string, error) {
 	url, err := ps.ss.CreateCustomerCheckoutSession(CustomerCheckoutSessionParams{
 		UserId:          fmt.Sprint(user.ID),
 		CustomerId:      user.StripeCustomerId,
-		StripeAccountId: account.StripeAccountId,
+		StripeAccountId: creator.StripeAccountId,
 		PodcastId:       pid,
 	})
 	if err != nil {

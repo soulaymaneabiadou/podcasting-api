@@ -32,8 +32,7 @@ func CreatePodcastsController() *controllers.PodcastsController {
 	podcastsRepository := repositories.NewPodcastsRepository(db)
 	usersRepository := repositories.NewUsersRepository(db)
 	subscriptionsRepository := repositories.NewSubscriptionsRepository(db)
-	accountsRepository := repositories.NewAccountsRepository(db)
-	usersService := services.NewUsersService(usersRepository, subscriptionsRepository, accountsRepository)
+	usersService := services.NewUsersService(usersRepository, subscriptionsRepository)
 	stripeGateway := gateway.NewStripeGateway()
 	stripeService := services.NewStripeService(stripeGateway, subscriptionsRepository)
 	podcastsService := services.NewPodcastsService(podcastsRepository, usersService, stripeService)
@@ -47,8 +46,7 @@ func CreateEpisodesController() *controllers.EpisodesController {
 	podcastsRepository := repositories.NewPodcastsRepository(db)
 	usersRepository := repositories.NewUsersRepository(db)
 	subscriptionsRepository := repositories.NewSubscriptionsRepository(db)
-	accountsRepository := repositories.NewAccountsRepository(db)
-	usersService := services.NewUsersService(usersRepository, subscriptionsRepository, accountsRepository)
+	usersService := services.NewUsersService(usersRepository, subscriptionsRepository)
 	stripeGateway := gateway.NewStripeGateway()
 	stripeService := services.NewStripeService(stripeGateway, subscriptionsRepository)
 	podcastsService := services.NewPodcastsService(podcastsRepository, usersService, stripeService)
@@ -68,4 +66,4 @@ func CreateWebhooksController() *controllers.WebhooksController {
 
 // wire.go:
 
-var podcastUserStripeSet = wire.NewSet(services.NewPodcastsService, services.NewUsersService, services.NewStripeService, gateway.NewStripeGateway, repositories.NewUsersRepository, repositories.NewPodcastsRepository, repositories.NewSubscriptionsRepository, repositories.NewAccountsRepository)
+var podcastUserStripeSet = wire.NewSet(services.NewPodcastsService, services.NewUsersService, services.NewStripeService, gateway.NewStripeGateway, repositories.NewUsersRepository, repositories.NewPodcastsRepository, repositories.NewSubscriptionsRepository)

@@ -73,5 +73,4 @@ var podcastUserStripeSet = wire.NewSet(
 	repositories.NewUsersRepository,
 	repositories.NewPodcastsRepository,
 	repositories.NewSubscriptionsRepository,
-	repositories.NewAccountsRepository,
 )

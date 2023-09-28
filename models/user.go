@@ -19,8 +19,11 @@ type User struct {
 	ResetPasswordExpire time.Time `json:"-"`
 	Role                string    `json:"role" gorm:"type:role;default:'listener'" sql:"type:Role"`
 	StripeCustomerId    string    `json:"stripe_customer_id" gorm:"type:varchar(255);null;unique"`
+	StripeAccountId     string    `json:"stripe_account_id" gorm:"type:varchar(255);null;unique"`
+	ChargesEnabled      bool      `json:"charges_enabled" gorm:"default:false"`
+	TransfersEnabled    bool      `json:"transfers_enabled" gorm:"default:false"`
+	DetailsSubmitted    bool      `json:"details_submitted" gorm:"default:false"`
 
-	Account            Account        `json:"-"`
 	Subscriptions      []Subscription `json:"-"`
 	SubscribedPodcasts []Podcast      `json:"subscribed_podcasts" gorm:"many2many:subscriptions"`
 }

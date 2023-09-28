@@ -64,7 +64,6 @@ func Migrate() {
 		&models.User{},
 		&models.Podcast{},
 		&models.Episode{},
-		&models.Account{},
 		&models.Subscription{},
 	)
 

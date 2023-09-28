@@ -10,15 +10,13 @@ import (
 type UsersService struct {
 	ur *repositories.UsersRepository
 	sr *repositories.SubscriptionsRepository
-	ar *repositories.AccountsRepository
 }
 
 func NewUsersService(
 	ur *repositories.UsersRepository,
 	sr *repositories.SubscriptionsRepository,
-	ar *repositories.AccountsRepository,
 ) *UsersService {
-	return &UsersService{ur: ur, sr: sr, ar: ar}
+	return &UsersService{ur: ur, sr: sr}
 }
 
 func (us *UsersService) GetUserById(id string) (types.User, error) {
@@ -33,10 +31,4 @@ func (us *UsersService) GetUserSubscriptionByPodcast(user types.User, pid string
 
 func (us *UsersService) SetUserCustomerId(user types.User, cid string) (types.User, error) {
 	return us.ur.Update(user, types.UpdateUserInput{StripeCustomerId: cid})
-}
-
-func (us *UsersService) GetUserAccountById(uid string) (types.Account, error) {
-	acct, err := us.ar.GetByUserId(uid)
-
-	return acct, err
 }
