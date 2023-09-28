@@ -22,16 +22,16 @@ const CREATOR_SHARE float64 = 100.00 - APPLICATION_FEE_PRECENT
 type StripeGateway struct{}
 
 type AccountLinkParams struct {
-	returnUrl  string
-	refreshUrl string
+	ReturnUrl  string
+	RefreshUrl string
 }
 
 type CheckoutSessionParams struct {
-	customerId       string
-	creatorAccountId string
-	podcastId        string
-	successUrl       string
-	cancelUrl        string
+	CustomerId       string
+	CreatorAccountId string
+	PodcastId        string
+	SuccessUrl       string
+	CancelUrl        string
 }
 
 func InitializeStripeGateway() {
@@ -78,8 +78,8 @@ func (sg *StripeGateway) CreateAccount(u types.User) (*stripe.Account, error) {
 func (sg *StripeGateway) CreateAccountLink(acct *stripe.Account, p AccountLinkParams) (*stripe.AccountLink, error) {
 	link, err := accountlink.New(&stripe.AccountLinkParams{
 		Account:    &acct.ID,
-		RefreshURL: stripe.String(p.refreshUrl),
-		ReturnURL:  stripe.String(p.returnUrl),
+		RefreshURL: stripe.String(p.RefreshUrl),
+		ReturnURL:  stripe.String(p.ReturnUrl),
 		Type:       stripe.String("account_onboarding"),
 		Collect:    stripe.String("eventually_due"),
 	})
@@ -107,8 +107,8 @@ func (sg *StripeGateway) CreateCheckoutSession(sp CheckoutSessionParams) (*strip
 	params := &stripe.CheckoutSessionParams{
 		Mode:              stripe.String("subscription"),
 		Currency:          stripe.String("usd"),
-		ClientReferenceID: &sp.customerId,
-		Customer:          &sp.customerId,
+		ClientReferenceID: &sp.CustomerId,
+		Customer:          &sp.CustomerId,
 		CustomerUpdate: &stripe.CheckoutSessionCustomerUpdateParams{
 			Address: stripe.String("auto"),
 		},
@@ -121,22 +121,22 @@ func (sg *StripeGateway) CreateCheckoutSession(sp CheckoutSessionParams) (*strip
 		AutomaticTax: &stripe.CheckoutSessionAutomaticTaxParams{
 			Enabled: stripe.Bool(true),
 		},
-		SuccessURL: stripe.String(sp.successUrl),
-		CancelURL:  stripe.String(sp.cancelUrl),
+		SuccessURL: stripe.String(sp.SuccessUrl),
+		CancelURL:  stripe.String(sp.CancelUrl),
 		Metadata: map[string]string{
-			"user_id":    sp.customerId,
-			"creator_id": sp.creatorAccountId,
-			"podcast_id": sp.podcastId,
+			"user_id":    sp.CustomerId,
+			"creator_id": sp.CreatorAccountId,
+			"podcast_id": sp.PodcastId,
 		},
 		SubscriptionData: &stripe.CheckoutSessionSubscriptionDataParams{
 			Metadata: map[string]string{
-				"user_id":    sp.customerId,
-				"creator_id": sp.creatorAccountId,
-				"podcast_id": sp.podcastId,
+				"user_id":    sp.CustomerId,
+				"creator_id": sp.CreatorAccountId,
+				"podcast_id": sp.PodcastId,
 			},
-			OnBehalfOf: &sp.creatorAccountId,
+			OnBehalfOf: &sp.CreatorAccountId,
 			TransferData: &stripe.CheckoutSessionSubscriptionDataTransferDataParams{
-				Destination:   &sp.creatorAccountId,
+				Destination:   &sp.CreatorAccountId,
 				AmountPercent: stripe.Float64(CREATOR_SHARE),
 			},
 		},
