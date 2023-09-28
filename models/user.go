@@ -18,7 +18,6 @@ type User struct {
 	ResetPasswordToken  string    `json:"-" gorm:"type:varchar(255);null"`
 	ResetPasswordExpire time.Time `json:"-"`
 	Role                string    `json:"role" gorm:"type:role;default:'listener'" sql:"type:Role"`
-	AccountId           string    `json:"-" gorm:"type:varchar(255);null"`
 	StripeCustomerId    string    `json:"stripe_customer_id" gorm:"type:varchar(255);null;unique"`
 
 	Account            Account        `json:"-"`

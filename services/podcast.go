@@ -131,10 +131,10 @@ func (ps *PodcastsService) Subscribe(uid, pid string) (string, error) {
 	}
 
 	url, err := ps.ss.CreateCustomerCheckoutSession(CustomerCheckoutSessionParams{
-		UserId:           fmt.Sprint(user.ID),
-		CustomerId:       user.StripeCustomerId,
-		CreatorAccountId: account.StripeAccountId,
-		PodcastId:        pid,
+		UserId:          fmt.Sprint(user.ID),
+		CustomerId:      user.StripeCustomerId,
+		StripeAccountId: account.StripeAccountId,
+		PodcastId:       pid,
 	})
 	if err != nil {
 		return "", err

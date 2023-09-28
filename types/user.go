@@ -27,6 +27,5 @@ type UpdateUserInput struct {
 	Password            string    `json:"password" binding:"min=8,alphanum"`
 	ResetPasswordToken  string    `json:"-"`
 	ResetPasswordExpire time.Time `json:"-"`
-	AccountId           string    `json:"account_id" binding:"-"`
 	StripeCustomerId    string    `json:"stripe_customer_id" binding:"-" gorm:"unique"`
 }

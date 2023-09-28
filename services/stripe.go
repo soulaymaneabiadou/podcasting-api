@@ -18,10 +18,10 @@ type StripeService struct {
 }
 
 type CustomerCheckoutSessionParams struct {
-	UserId           string
-	CustomerId       string
-	CreatorAccountId string
-	PodcastId        string
+	UserId          string
+	CustomerId      string
+	StripeAccountId string
+	PodcastId       string
 }
 
 func NewStripeService(sg *gateway.StripeGateway, sr *repositories.SubscriptionsRepository) *StripeService {
@@ -36,7 +36,7 @@ func (ss *StripeService) CreateCustomerCheckoutSession(input CustomerCheckoutSes
 	session, err := ss.sg.CreateCheckoutSession(gateway.CheckoutSessionParams{
 		UserId:           input.UserId,
 		CustomerId:       input.CustomerId,
-		CreatorAccountId: input.CreatorAccountId,
+		CreatorAccountId: input.StripeAccountId,
 		PodcastId:        input.PodcastId,
 		SuccessUrl:       os.Getenv("PUBLIC_URL") + "/api/v1/podcasts/" + input.PodcastId,
 		CancelUrl:        os.Getenv("PUBLIC_URL") + "/api/v1/podcasts/" + input.PodcastId,
