@@ -51,7 +51,7 @@ func (sg *StripeGateway) CreateAccount(u types.User) (*stripe.Account, error) {
 		Email:        stripe.String(u.Email),
 		Metadata:     map[string]string{"user_id": fmt.Sprint(u.ID)},
 		BusinessType: stripe.String("individual"),
-		Individual:   &stripe.PersonParams{Email: &u.Email},
+		Individual:   &stripe.PersonParams{Email: stripe.String(u.Email)},
 		BusinessProfile: &stripe.AccountBusinessProfileParams{
 			MCC:                stripe.String("5815"),
 			Name:               stripe.String(u.Name),
@@ -64,6 +64,14 @@ func (sg *StripeGateway) CreateAccount(u types.User) (*stripe.Account, error) {
 			},
 			Transfers: &stripe.AccountCapabilitiesTransfersParams{
 				Requested: stripe.Bool(true),
+			},
+		},
+		Settings: &stripe.AccountSettingsParams{
+			Payouts: &stripe.AccountSettingsPayoutsParams{
+				Schedule: &stripe.AccountSettingsPayoutsScheduleParams{
+					Interval:      stripe.String("monthly"),
+					MonthlyAnchor: stripe.Int64(31),
+				},
 			},
 		},
 		TOSAcceptance: &stripe.AccountTOSAcceptanceParams{
@@ -86,6 +94,12 @@ func (sg *StripeGateway) CreateAccountLink(acct *stripe.Account, p AccountLinkPa
 	})
 
 	return link, err
+}
+
+func (sg *StripeGateway) GetAccount(id string) (*stripe.Account, error) {
+	acct, err := account.GetByID(id, &stripe.AccountParams{})
+
+	return acct, err
 }
 
 func (sg *StripeGateway) CreateCustomer(u types.User) (*stripe.Customer, error) {
