@@ -34,7 +34,7 @@ func CreatePodcastsController() *controllers.PodcastsController {
 	subscriptionsRepository := repositories.NewSubscriptionsRepository(db)
 	usersService := services.NewUsersService(usersRepository, subscriptionsRepository)
 	stripeGateway := gateway.NewStripeGateway()
-	stripeService := services.NewStripeService(stripeGateway, subscriptionsRepository)
+	stripeService := services.NewStripeService(stripeGateway, subscriptionsRepository, usersService)
 	podcastsService := services.NewPodcastsService(podcastsRepository, usersService, stripeService)
 	podcastsController := controllers.NewPodcastsController(podcastsService)
 	return podcastsController
@@ -48,7 +48,7 @@ func CreateEpisodesController() *controllers.EpisodesController {
 	subscriptionsRepository := repositories.NewSubscriptionsRepository(db)
 	usersService := services.NewUsersService(usersRepository, subscriptionsRepository)
 	stripeGateway := gateway.NewStripeGateway()
-	stripeService := services.NewStripeService(stripeGateway, subscriptionsRepository)
+	stripeService := services.NewStripeService(stripeGateway, subscriptionsRepository, usersService)
 	podcastsService := services.NewPodcastsService(podcastsRepository, usersService, stripeService)
 	episodesService := services.NewEpisodesService(episodesRepository, podcastsService)
 	episodesController := controllers.NewEpisodesController(episodesService)
@@ -59,11 +59,26 @@ func CreateWebhooksController() *controllers.WebhooksController {
 	stripeGateway := gateway.NewStripeGateway()
 	db := database.Connection()
 	subscriptionsRepository := repositories.NewSubscriptionsRepository(db)
-	stripeService := services.NewStripeService(stripeGateway, subscriptionsRepository)
+	usersRepository := repositories.NewUsersRepository(db)
+	usersService := services.NewUsersService(usersRepository, subscriptionsRepository)
+	stripeService := services.NewStripeService(stripeGateway, subscriptionsRepository, usersService)
 	webhooksController := controllers.NewWebhooksController(stripeService)
 	return webhooksController
 }
 
+func CreateStripeController() *controllers.StripeController {
+	stripeGateway := gateway.NewStripeGateway()
+	db := database.Connection()
+	subscriptionsRepository := repositories.NewSubscriptionsRepository(db)
+	usersRepository := repositories.NewUsersRepository(db)
+	usersService := services.NewUsersService(usersRepository, subscriptionsRepository)
+	stripeService := services.NewStripeService(stripeGateway, subscriptionsRepository, usersService)
+	stripeController := controllers.NewStripeController(stripeService, usersService)
+	return stripeController
+}
+
 // wire.go:
 
-var podcastUserStripeSet = wire.NewSet(services.NewPodcastsService, services.NewUsersService, services.NewStripeService, gateway.NewStripeGateway, repositories.NewUsersRepository, repositories.NewPodcastsRepository, repositories.NewSubscriptionsRepository)
+var podcastUserStripeSet = wire.NewSet(services.NewPodcastsService, repositories.NewPodcastsRepository, stripeServiceSet)
+
+var stripeServiceSet = wire.NewSet(services.NewUsersService, repositories.NewUsersRepository, services.NewStripeService, gateway.NewStripeGateway, repositories.NewSubscriptionsRepository, database.Connection)

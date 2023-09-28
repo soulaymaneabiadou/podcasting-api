@@ -9,5 +9,6 @@ func RegisterRoutes(g *gin.RouterGroup) {
 	authRoutes(g)
 	podcastsRoutes(g)
 	episodesRoutes(g)
+	stripeRoutes(g)
 	webhooksRoutes(g)
 }

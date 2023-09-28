@@ -32,8 +32,6 @@ func CreatePodcastsController() *controllers.PodcastsController {
 	wire.Build(
 		controllers.NewPodcastsController,
 		podcastUserStripeSet,
-		database.Connection,
-		// PodcastsControllerSet,
 	)
 
 	return &controllers.PodcastsController{}
@@ -45,8 +43,6 @@ func CreateEpisodesController() *controllers.EpisodesController {
 		services.NewEpisodesService,
 		repositories.NewEpisodesRepository,
 		podcastUserStripeSet,
-		database.Connection,
-		// EpisodesControllerSet,
 	)
 
 	return &controllers.EpisodesController{}
@@ -55,22 +51,34 @@ func CreateEpisodesController() *controllers.EpisodesController {
 func CreateWebhooksController() *controllers.WebhooksController {
 	wire.Build(
 		controllers.NewWebhooksController,
-		services.NewStripeService,
-		gateway.NewStripeGateway,
-		repositories.NewSubscriptionsRepository,
-		database.Connection,
+		stripeServiceSet,
 		// WebhooksControllerSet,
 	)
 
 	return &controllers.WebhooksController{}
 }
 
+func CreateStripeController() *controllers.StripeController {
+	wire.Build(
+		controllers.NewStripeController,
+		stripeServiceSet,
+		// WebhooksControllerSet,
+	)
+
+	return &controllers.StripeController{}
+}
+
 var podcastUserStripeSet = wire.NewSet(
 	services.NewPodcastsService,
+	repositories.NewPodcastsRepository,
+	stripeServiceSet,
+)
+
+var stripeServiceSet = wire.NewSet(
 	services.NewUsersService,
+	repositories.NewUsersRepository,
 	services.NewStripeService,
 	gateway.NewStripeGateway,
-	repositories.NewUsersRepository,
-	repositories.NewPodcastsRepository,
 	repositories.NewSubscriptionsRepository,
+	database.Connection,
 )
