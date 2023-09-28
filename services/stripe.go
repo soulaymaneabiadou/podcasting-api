@@ -15,6 +15,7 @@ import (
 type StripeService struct {
 	sg *gateway.StripeGateway
 	sr *repositories.SubscriptionsRepository
+	us *UsersService
 }
 
 type CustomerCheckoutSessionParams struct {
@@ -24,8 +25,23 @@ type CustomerCheckoutSessionParams struct {
 	PodcastId       string
 }
 
-func NewStripeService(sg *gateway.StripeGateway, sr *repositories.SubscriptionsRepository) *StripeService {
-	return &StripeService{sg: sg, sr: sr}
+func NewStripeService(sg *gateway.StripeGateway, sr *repositories.SubscriptionsRepository, us *UsersService) *StripeService {
+	return &StripeService{sg: sg, sr: sr, us: us}
+}
+
+func (ss *StripeService) CreateAccount(u types.User) (*stripe.Account, error) {
+	return ss.sg.CreateAccount(u)
+}
+
+func (ss *StripeService) GetAccount(aid string) (*stripe.Account, error) {
+	return ss.sg.GetAccount(aid)
+}
+
+func (ss *StripeService) CreateAccountLink(acct *stripe.Account) (*stripe.AccountLink, error) {
+	return ss.sg.CreateAccountLink(acct, gateway.AccountLinkParams{
+		ReturnUrl:  os.Getenv("PUBLIC_URL") + "/api/v1/",
+		RefreshUrl: os.Getenv("PUBLIC_URL") + "/api/v1/stripe/connect",
+	})
 }
 
 func (ss *StripeService) CreateCustomer(u types.User) (*stripe.Customer, error) {
@@ -63,6 +79,20 @@ func (ss *StripeService) HandleWebhookEvent(event stripe.Event) {
 			PodcastId:            uint(pid),
 			StripeSubscriptionId: subscription.ID,
 			Status:               string(subscription.Status),
+		})
+
+	case "account.updated":
+		var account stripe.Account
+		err := json.Unmarshal(event.Data.Raw, &account)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error parsing account JSON: %v\n", err)
+			return
+		}
+
+		ss.us.UpdateStripeInfo(account.ID, types.UpdateUserInput{
+			ChargesEnabled:   account.ChargesEnabled,
+			TransfersEnabled: account.PayoutsEnabled,
+			DetailsSubmitted: account.DetailsSubmitted,
 		})
 
 	default:
