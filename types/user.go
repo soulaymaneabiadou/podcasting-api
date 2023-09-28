@@ -28,4 +28,8 @@ type UpdateUserInput struct {
 	ResetPasswordToken  string    `json:"-"`
 	ResetPasswordExpire time.Time `json:"-"`
 	StripeCustomerId    string    `json:"stripe_customer_id" binding:"-" gorm:"unique"`
+	StripeAccountId     string    `json:"stripe_account_id" binding:"-" gorm:"unique"`
+	ChargesEnabled      bool      `json:"charges_enabled" binding:"-"`
+	TransfersEnabled    bool      `json:"transfers_enabled" binding:"-"`
+	DetailsSubmitted    bool      `json:"details_submitted" binding:"-"`
 }
