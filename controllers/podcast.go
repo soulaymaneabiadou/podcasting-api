@@ -3,7 +3,6 @@ package controllers
 import (
 	"errors"
 	"log"
-	"net/http"
 	"strconv"
 
 	"podcast/services"
@@ -110,5 +109,7 @@ func (pc *PodcastsController) Subscribe(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, url)
+	// TODO: enable
+	// c.Redirect(http.StatusTemporaryRedirect, url)
+	utils.SuccessResponse(c, url)
 }
