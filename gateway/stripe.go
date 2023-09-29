@@ -14,6 +14,7 @@ import (
 	billingsession "github.com/stripe/stripe-go/v75/billingportal/session"
 	"github.com/stripe/stripe-go/v75/checkout/session"
 	"github.com/stripe/stripe-go/v75/customer"
+	"github.com/stripe/stripe-go/v75/loginlink"
 	"github.com/stripe/stripe-go/v75/testhelpers/testclock"
 )
 
@@ -133,6 +134,16 @@ func (sg *StripeGateway) CreateCustomerPortalSession(input BillingSessionParams)
 	s, err := billingsession.New(params)
 
 	return s, err
+}
+
+func (sg *StripeGateway) CreateConnectAccountLink(account string) (*stripe.LoginLink, error) {
+	params := &stripe.LoginLinkParams{
+		Account: stripe.String(account),
+	}
+
+	l, err := loginlink.New(params)
+
+	return l, err
 }
 
 func (sg *StripeGateway) CreateCheckoutSession(sp CheckoutSessionParams) (*stripe.CheckoutSession, error) {

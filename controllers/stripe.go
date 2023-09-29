@@ -123,3 +123,28 @@ func (sc *StripeController) CustomerPortal(c *gin.Context) {
 	// c.Redirect(http.StatusTemporaryRedirect, session.URL)
 	c.JSON(http.StatusOK, session.URL)
 }
+
+func (sc *StripeController) ConnectAccount(c *gin.Context) {
+	id, _ := utils.GetCtxUser(c)
+
+	user, err := sc.us.GetUserById(id)
+	if err != nil {
+		utils.ErrorsResponse(c, err)
+		return
+	}
+
+	if user.StripeAccountId == "" {
+		utils.ErrorsResponse(c, errors.New("user is not a customer yet"))
+		return
+	}
+
+	link, err := sc.ss.CreateConnectAccountLink(user.StripeAccountId)
+	if err != nil {
+		utils.ErrorsResponse(c, err)
+		return
+	}
+
+	// TODO: enable
+	// c.Redirect(http.StatusTemporaryRedirect, link.URL)
+	c.JSON(http.StatusOK, link.URL)
+}

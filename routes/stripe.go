@@ -15,6 +15,7 @@ func stripeRoutes(r *gin.RouterGroup) {
 
 	g.POST("/connect", middleware.Authorize([]types.Role{types.CREATOR_ROLE}), sc.Connect)
 	g.POST("/onboard", middleware.Authorize([]types.Role{types.CREATOR_ROLE}), sc.Onboard)
+	g.GET("/account", middleware.Authorize([]types.Role{types.CREATOR_ROLE}), sc.ConnectAccount)
 
-	g.POST("/portal", middleware.Authorize([]types.Role{types.LISTENER_ROLE}), sc.CustomerPortal)
+	g.GET("/portal", middleware.Authorize([]types.Role{types.LISTENER_ROLE}), sc.CustomerPortal)
 }

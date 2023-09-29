@@ -70,6 +70,12 @@ func (ss *StripeService) CreateCustomerPortalSession(cid string) (*stripe.Billin
 	return session, err
 }
 
+func (ss *StripeService) CreateConnectAccountLink(aid string) (*stripe.LoginLink, error) {
+	session, err := ss.sg.CreateConnectAccountLink(aid)
+
+	return session, err
+}
+
 func (ss *StripeService) HandleWebhookEvent(event stripe.Event) {
 	switch event.Type {
 	case "customer.subscription.created":
