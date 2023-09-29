@@ -51,7 +51,7 @@ func CreateEpisodesController() *controllers.EpisodesController {
 	stripeService := services.NewStripeService(stripeGateway, subscriptionsRepository, usersService)
 	podcastsService := services.NewPodcastsService(podcastsRepository, usersService, stripeService)
 	episodesService := services.NewEpisodesService(episodesRepository, podcastsService)
-	episodesController := controllers.NewEpisodesController(episodesService)
+	episodesController := controllers.NewEpisodesController(episodesService, usersService)
 	return episodesController
 }
 

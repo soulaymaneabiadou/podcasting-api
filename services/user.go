@@ -29,6 +29,15 @@ func (us *UsersService) GetUserSubscriptionByPodcast(user types.User, pid string
 	return subscription, err
 }
 
+func (us *UsersService) IsUserSubscribedToPodcast(uid, pid string) (bool, error) {
+	subscription, err := us.sr.GetByUserAndPodcast(uid, pid)
+	if err != nil {
+		return false, err
+	}
+
+	return subscription.Status == "active", err
+}
+
 func (us *UsersService) SetUserCustomerId(user types.User, cid string) (types.User, error) {
 	return us.ur.Update(user, types.UpdateUserInput{StripeCustomerId: cid})
 }

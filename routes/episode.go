@@ -12,7 +12,7 @@ func episodesRoutes(r *gin.RouterGroup) {
 	ec := CreateEpisodesController()
 
 	g.Use(middleware.Authenticate())
-	// TODO: separate public episodes from the rest when not authenticated
+
 	g.GET("/:eid", ec.GetPodcastEpisode)
 
 	g.Use(middleware.Authorize([]types.Role{types.CREATOR_ROLE}))

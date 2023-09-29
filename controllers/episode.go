@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"strconv"
 
@@ -14,10 +15,11 @@ import (
 
 type EpisodesController struct {
 	es *services.EpisodesService
+	us *services.UsersService
 }
 
-func NewEpisodesController(es *services.EpisodesService) *EpisodesController {
-	return &EpisodesController{es: es}
+func NewEpisodesController(es *services.EpisodesService, us *services.UsersService) *EpisodesController {
+	return &EpisodesController{es: es, us: us}
 }
 
 func (pc *EpisodesController) GetPodcastEpisodes(c *gin.Context) {
@@ -39,10 +41,28 @@ func (pc *EpisodesController) GetPodcastEpisodes(c *gin.Context) {
 
 func (pc *EpisodesController) GetPodcastEpisode(c *gin.Context) {
 	id := c.Param("eid")
+	uid, _ := utils.GetCtxUser(c)
 
 	episode, err := pc.es.GetPodcastEpisodeById(id)
 	if err != nil {
 		utils.NotFoundResponse(c)
+		return
+	}
+
+	// episode is public, no need to check for a subscription
+	if episode.Visibility == "public" {
+		utils.SuccessResponse(c, episode)
+		return
+	}
+
+	subscribed, err := pc.us.IsUserSubscribedToPodcast(uid, fmt.Sprint(episode.PodcastId))
+	if err != nil {
+		utils.ErrorsResponse(c, errors.New("an error occured while checking for eligibility, please try again later"))
+		return
+	}
+
+	if !subscribed {
+		utils.ErrorsResponse(c, errors.New("you haven't subscribed to this episode's podcast yet."))
 		return
 	}
 
