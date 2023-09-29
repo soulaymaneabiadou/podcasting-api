@@ -147,7 +147,6 @@ func (sg *StripeGateway) CreateCheckoutSession(sp CheckoutSessionParams) (*strip
 				"user_id":    sp.UserId,
 				"podcast_id": sp.PodcastId,
 			},
-			OnBehalfOf: &sp.CreatorAccountId,
 			TransferData: &stripe.CheckoutSessionSubscriptionDataTransferDataParams{
 				Destination:   &sp.CreatorAccountId,
 				AmountPercent: stripe.Float64(CREATOR_SHARE),
