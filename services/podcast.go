@@ -98,12 +98,17 @@ func (ps *PodcastsService) GetPodcastCreator(id string) (types.User, error) {
 }
 
 func (ps *PodcastsService) Subscribe(uid, pid string) (string, error) {
+	podcast, err := ps.GetPodcastById(pid)
+	if err != nil {
+		return "", err
+	}
+
 	user, err := ps.us.GetUserById(uid)
 	if err != nil {
 		return "", err
 	}
 
-	sub, err := ps.us.GetUserSubscriptionByPodcast(user, pid)
+	sub, err := ps.us.GetUserSubscriptionByPodcast(user, fmt.Sprint(podcast.ID))
 	if err != nil {
 		return "", err
 	}
@@ -123,7 +128,7 @@ func (ps *PodcastsService) Subscribe(uid, pid string) (string, error) {
 		}
 	}
 
-	creator, err := ps.GetPodcastCreator(pid)
+	creator, err := ps.GetPodcastCreator(fmt.Sprint(podcast.ID))
 	if err != nil {
 		return "", err
 	}
@@ -132,7 +137,7 @@ func (ps *PodcastsService) Subscribe(uid, pid string) (string, error) {
 		UserId:          fmt.Sprint(user.ID),
 		CustomerId:      user.StripeCustomerId,
 		StripeAccountId: creator.StripeAccountId,
-		PodcastId:       pid,
+		PodcastId:       fmt.Sprint(podcast.ID),
 	})
 	if err != nil {
 		return "", err
