@@ -33,7 +33,7 @@ func (er *EpisodesRepository) Count(pid string) (int64, error) {
 func (er *EpisodesRepository) GetAll(pid string, p types.Paginator) ([]types.Episode, error) {
 	var episodes []types.Episode
 
-	if err := database.Paginate(p).Where("podcast_id=?", pid).Where("visibility=?", "public").Find(&episodes).Error; err != nil {
+	if err := database.Paginate(p).Where("podcast_id=?", pid).Find(&episodes).Error; err != nil {
 		log.Println(err.Error())
 		return []types.Episode{}, err
 	}
