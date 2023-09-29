@@ -53,3 +53,14 @@ func (sr *SubscriptionsRepository) Create(input types.CreateSubscriptionInput) (
 
 	return subscription, nil
 }
+
+func (sr *SubscriptionsRepository) UpdateStatus(sid string, status string) (types.Subscription, error) {
+	var subscription types.Subscription
+
+	if err := sr.db.Model(&subscription).Where("stripe_subscription_id=?", sid).Update("status", status).Error; err != nil {
+		log.Println(err)
+		return types.Subscription{}, errors.New("subscription not found by stripe subscription id")
+	}
+
+	return subscription, nil
+}

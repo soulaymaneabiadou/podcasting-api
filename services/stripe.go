@@ -55,7 +55,7 @@ func (ss *StripeService) CreateCustomerCheckoutSession(input CustomerCheckoutSes
 		CreatorAccountId: input.StripeAccountId,
 		PodcastId:        input.PodcastId,
 		SuccessUrl:       os.Getenv("PUBLIC_URL") + "/api/v1/podcasts/" + input.PodcastId,
-		CancelUrl:        os.Getenv("PUBLIC_URL") + "/api/v1/podcasts/" + input.PodcastId,
+		CancelUrl:        os.Getenv("PUBLIC_URL") + "/api/v1/podcasts/" + input.PodcastId + "?success=false",
 	})
 
 	return session.URL, err
@@ -80,6 +80,16 @@ func (ss *StripeService) HandleWebhookEvent(event stripe.Event) {
 			StripeSubscriptionId: subscription.ID,
 			Status:               string(subscription.Status),
 		})
+
+	case "customer.subscription.updated":
+		var subscription stripe.Subscription
+		err := json.Unmarshal(event.Data.Raw, &subscription)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error parsing subscription JSON: %v\n", err)
+			return
+		}
+
+		ss.sr.UpdateStatus(subscription.ID, string(subscription.Status))
 
 	case "account.updated":
 		var account stripe.Account
