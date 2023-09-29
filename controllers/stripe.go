@@ -98,3 +98,28 @@ func (sc *StripeController) Onboard(c *gin.Context) {
 	// c.Redirect(http.StatusTemporaryRedirect, link.URL)
 	c.JSON(http.StatusOK, link.URL)
 }
+
+func (sc *StripeController) CustomerPortal(c *gin.Context) {
+	id, _ := utils.GetCtxUser(c)
+
+	user, err := sc.us.GetUserById(id)
+	if err != nil {
+		utils.ErrorsResponse(c, err)
+		return
+	}
+
+	if user.StripeCustomerId == "" {
+		utils.ErrorsResponse(c, errors.New("user is not a customer yet"))
+		return
+	}
+
+	session, err := sc.ss.CreateCustomerPortalSession(user.StripeCustomerId)
+	if err != nil {
+		utils.ErrorsResponse(c, err)
+		return
+	}
+
+	// TODO: enable
+	// c.Redirect(http.StatusTemporaryRedirect, session.URL)
+	c.JSON(http.StatusOK, session.URL)
+}

@@ -11,6 +11,7 @@ import (
 	"github.com/stripe/stripe-go/v75"
 	"github.com/stripe/stripe-go/v75/account"
 	"github.com/stripe/stripe-go/v75/accountlink"
+	billingsession "github.com/stripe/stripe-go/v75/billingportal/session"
 	"github.com/stripe/stripe-go/v75/checkout/session"
 	"github.com/stripe/stripe-go/v75/customer"
 	"github.com/stripe/stripe-go/v75/testhelpers/testclock"
@@ -33,6 +34,11 @@ type CheckoutSessionParams struct {
 	PodcastId        string
 	SuccessUrl       string
 	CancelUrl        string
+}
+
+type BillingSessionParams struct {
+	CustomerId string
+	ReturnUrl  string
 }
 
 func InitializeStripeGateway() {
@@ -116,6 +122,17 @@ func (sg *StripeGateway) CreateCustomer(u types.User) (*stripe.Customer, error) 
 	c, err := customer.New(params)
 
 	return c, err
+}
+
+func (sg *StripeGateway) CreateCustomerPortalSession(input BillingSessionParams) (*stripe.BillingPortalSession, error) {
+	params := &stripe.BillingPortalSessionParams{
+		Customer:  stripe.String(input.CustomerId),
+		ReturnURL: stripe.String(input.ReturnUrl),
+	}
+
+	s, err := billingsession.New(params)
+
+	return s, err
 }
 
 func (sg *StripeGateway) CreateCheckoutSession(sp CheckoutSessionParams) (*stripe.CheckoutSession, error) {

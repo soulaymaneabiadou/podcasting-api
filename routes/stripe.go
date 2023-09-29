@@ -11,8 +11,10 @@ func stripeRoutes(r *gin.RouterGroup) {
 	g := r.Group("/stripe")
 	sc := CreateStripeController()
 
-	g.Use(middleware.Authenticate(), middleware.Authorize([]types.Role{types.CREATOR_ROLE}))
+	g.Use(middleware.Authenticate())
 
-	g.POST("/connect", sc.Connect)
-	g.POST("/onboard", sc.Onboard)
+	g.POST("/connect", middleware.Authorize([]types.Role{types.CREATOR_ROLE}), sc.Connect)
+	g.POST("/onboard", middleware.Authorize([]types.Role{types.CREATOR_ROLE}), sc.Onboard)
+
+	g.POST("/portal", middleware.Authorize([]types.Role{types.LISTENER_ROLE}), sc.CustomerPortal)
 }

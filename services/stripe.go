@@ -61,6 +61,15 @@ func (ss *StripeService) CreateCustomerCheckoutSession(input CustomerCheckoutSes
 	return session.URL, err
 }
 
+func (ss *StripeService) CreateCustomerPortalSession(cid string) (*stripe.BillingPortalSession, error) {
+	session, err := ss.sg.CreateCustomerPortalSession(gateway.BillingSessionParams{
+		CustomerId: cid,
+		ReturnUrl:  os.Getenv("PUBLIC_URL") + "/api/v1/auth/me",
+	})
+
+	return session, err
+}
+
 func (ss *StripeService) HandleWebhookEvent(event stripe.Event) {
 	switch event.Type {
 	case "customer.subscription.created":
