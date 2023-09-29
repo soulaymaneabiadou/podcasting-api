@@ -9,6 +9,7 @@ type SignupInput struct {
 type SigninInput struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required"`
+	IP       string `json:"-" binding:"-"`
 }
 
 type UpdateDetailsInput struct {

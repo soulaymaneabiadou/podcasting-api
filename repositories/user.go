@@ -118,6 +118,11 @@ func (ur *UsersRepository) Update(user types.User, input types.UpdateUserInput) 
 		VerificationToken:   input.VerificationToken,
 		Verified:            input.Verified,
 		VerifiedAt:          input.VerifiedAt,
+		SigninCount:         input.SigninCount,
+		CurrentSigninAt:     input.CurrentSigninAt,
+		CurrentSigninIP:     input.CurrentSigninIP,
+		LastSigninAt:        input.LastSigninAt,
+		LastSigninIP:        input.LastSigninIP,
 	}
 
 	if payload.Password != "" {

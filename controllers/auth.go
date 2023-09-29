@@ -57,6 +57,8 @@ func (ac *AuthController) SignIn(c *gin.Context) {
 		return
 	}
 
+	data.IP = c.ClientIP()
+
 	user, err := ac.as.Signin(data)
 	if err != nil {
 		utils.ErrorsResponse(c, err)

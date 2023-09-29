@@ -36,4 +36,9 @@ type UpdateUserInput struct {
 	VerificationToken   string    `json:"-"`
 	Verified            bool      `json:"-"`
 	VerifiedAt          time.Time `json:"-"`
+	SigninCount         int64     `json:"-"`
+	CurrentSigninAt     time.Time `json:"-"`
+	CurrentSigninIP     string    `json:"-"`
+	LastSigninAt        time.Time `json:"-"`
+	LastSigninIP        string    `json:"-"`
 }

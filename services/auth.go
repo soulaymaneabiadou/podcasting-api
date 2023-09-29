@@ -100,6 +100,14 @@ func (as *AuthService) Signin(u types.SigninInput) (types.User, error) {
 		return types.User{}, errors.New("invalid credentials")
 	}
 
+	as.ur.Update(user, types.UpdateUserInput{
+		SigninCount:     user.SigninCount + 1,
+		LastSigninAt:    user.CurrentSigninAt,
+		LastSigninIP:    user.CurrentSigninIP,
+		CurrentSigninAt: time.Now(),
+		CurrentSigninIP: u.IP,
+	})
+
 	return user, nil
 }
 
