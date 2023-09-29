@@ -15,7 +15,7 @@ type User struct {
 	Name                string    `json:"name" gorm:"type:varchar(255)"`
 	Email               string    `json:"email" gorm:"type:varchar(255);not null;unique"`
 	Password            string    `json:"-" gorm:"type:varchar(255);not null"`
-	ResetPasswordToken  string    `json:"-" gorm:"type:varchar(255);null"`
+	ResetPasswordToken  string    `json:"-" gorm:"type:varchar(255);null;unique"`
 	ResetPasswordExpire time.Time `json:"-"`
 	Role                string    `json:"role" gorm:"type:role;default:'listener'" sql:"type:Role"`
 	StripeCustomerId    string    `json:"stripe_customer_id" gorm:"type:varchar(255);null;unique"`
@@ -23,6 +23,9 @@ type User struct {
 	ChargesEnabled      bool      `json:"charges_enabled" gorm:"default:false"`
 	TransfersEnabled    bool      `json:"transfers_enabled" gorm:"default:false"`
 	DetailsSubmitted    bool      `json:"details_submitted" gorm:"default:false"`
+	VerificationToken   string    `json:"-" gorm:"type:varchar(255);null;unique"`
+	Verified            bool      `json:"-" gorm:"default:false"`
+	VerifiedAt          time.Time `json:"-"`
 
 	Subscriptions      []Subscription `json:"-"`
 	SubscribedPodcasts []Podcast      `json:"subscribed_podcasts" gorm:"many2many:subscriptions"`

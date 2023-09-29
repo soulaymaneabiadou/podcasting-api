@@ -25,11 +25,20 @@ func (as *AuthService) Signup(u types.SignupInput) (types.User, error) {
 		return types.User{}, errors.New("email already exists")
 	}
 
+	token, err := hasher.GenerateSecureToken(20)
+	if err != nil {
+		log.Println(err)
+		return types.User{}, errors.New("an error occured while signing up, please try again later with valid information")
+	}
+
+	hash := hasher.GenerateTokenHash(token)
+
 	data := types.CreateUserInput{
-		Name:     u.Name,
-		Email:    u.Email,
-		Password: u.Password,
-		Role:     types.LISTENER_ROLE,
+		Name:              u.Name,
+		Email:             u.Email,
+		Password:          u.Password,
+		Role:              types.LISTENER_ROLE,
+		VerificationToken: hash,
 	}
 
 	user, err = as.ur.Create(data)
@@ -37,7 +46,7 @@ func (as *AuthService) Signup(u types.SignupInput) (types.User, error) {
 		return types.User{}, errors.New("an error occured while signing up, please try again later with valid information")
 	}
 
-	go as.es.SendListenerWelcomeEmail(user)
+	go as.es.SendListenerWelcomeEmail(user, token)
 
 	return user, nil
 }
@@ -48,11 +57,20 @@ func (as *AuthService) Join(u types.SignupInput) (types.User, error) {
 		return types.User{}, errors.New("email already exists")
 	}
 
+	token, err := hasher.GenerateSecureToken(20)
+	if err != nil {
+		log.Println(err)
+		return types.User{}, errors.New("an error occured while joining, please try again later with valid information")
+	}
+
+	hash := hasher.GenerateTokenHash(token)
+
 	data := types.CreateUserInput{
-		Name:     u.Name,
-		Email:    u.Email,
-		Password: u.Password,
-		Role:     types.CREATOR_ROLE,
+		Name:              u.Name,
+		Email:             u.Email,
+		Password:          u.Password,
+		Role:              types.CREATOR_ROLE,
+		VerificationToken: hash,
 	}
 
 	user, err = as.ur.Create(data)
@@ -60,7 +78,7 @@ func (as *AuthService) Join(u types.SignupInput) (types.User, error) {
 		return types.User{}, errors.New("an error occured while joining, please try again later with valid information")
 	}
 
-	go as.es.SendCreatorWelcomeEmail(user)
+	go as.es.SendCreatorWelcomeEmail(user, token)
 
 	return user, nil
 }
@@ -69,13 +87,17 @@ func (as *AuthService) Signin(u types.SigninInput) (types.User, error) {
 	user, err := as.ur.GetByEmail(u.Email)
 	if err != nil {
 		log.Println(err)
-		return types.User{}, errors.New("user not found")
+		return types.User{}, errors.New("invalid credentials")
+	}
+
+	if !user.Verified {
+		return types.User{}, errors.New("user has not been verified yet, please check your inbox for more info.")
 	}
 
 	err = hasher.VerifyPassword(u.Password, user.Password)
 	if err != nil {
 		log.Println(err)
-		return types.User{}, err
+		return types.User{}, errors.New("invalid credentials")
 	}
 
 	return user, nil
@@ -166,6 +188,24 @@ func (as *AuthService) ResetPassword(token string, password string) (bool, error
 	})
 
 	go as.es.SendPasswordResettedEmail(user)
+
+	return true, nil
+}
+
+func (as *AuthService) Verify(token string) (bool, error) {
+	hash := hasher.GenerateTokenHash(token)
+
+	user, err := as.ur.GetByVerificationToken(hash)
+	if err != nil {
+		log.Println(err)
+		return false, err
+	}
+
+	as.ur.Update(user, types.UpdateUserInput{
+		VerificationToken: "nil",
+		Verified:          true,
+		VerifiedAt:        time.Now(),
+	})
 
 	return true, nil
 }

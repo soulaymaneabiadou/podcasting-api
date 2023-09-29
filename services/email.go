@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"os"
 	"podcast/gateway"
 	"podcast/types"
@@ -15,12 +16,16 @@ func NewEmailService(g gateway.EmailGateway) *EmailService {
 	return &EmailService{g: g}
 }
 
-func (es *EmailService) SendListenerWelcomeEmail(user types.User) {
+func (es *EmailService) createVerificationUrl(token string) string {
+	return fmt.Sprintf("%s/api/v1/auth/verify/%s", os.Getenv("PUBLIC_URL"), token)
+}
+
+func (es *EmailService) SendListenerWelcomeEmail(user types.User, token string) {
 	subject := "Welcome to Podcasting Platform"
 	data := map[string]string{
 		"Subject":         subject,
 		"Name":            user.Name,
-		"VerificationURL": os.Getenv("PUBLIC_URL") + "/api/v1/auth/verify/<token>",
+		"VerificationURL": es.createVerificationUrl(token),
 	}
 
 	es.g.SendEmail(gateway.EmailPayload{
@@ -31,12 +36,12 @@ func (es *EmailService) SendListenerWelcomeEmail(user types.User) {
 	})
 }
 
-func (es *EmailService) SendCreatorWelcomeEmail(user types.User) {
+func (es *EmailService) SendCreatorWelcomeEmail(user types.User, token string) {
 	subject := "Thanks for Joining Podcasting Platform"
 	data := map[string]string{
 		"Subject":         subject,
 		"Name":            user.Name,
-		"VerificationURL": os.Getenv("PUBLIC_URL") + "/api/v1/auth/verify/<token>",
+		"VerificationURL": es.createVerificationUrl(token),
 	}
 
 	es.g.SendEmail(gateway.EmailPayload{

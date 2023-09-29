@@ -20,4 +20,5 @@ func authRoutes(r *gin.RouterGroup) {
 	g.PATCH("/updatepassword", middleware.Authenticate(), ac.UpdatePassword)
 	g.POST("/forgotpassword", ac.ForgotPassword)
 	g.PUT("/resetpassword/:resettoken", ac.ResetPassword)
+	g.PUT("/verify/:verificationtoken", ac.Verify)
 }

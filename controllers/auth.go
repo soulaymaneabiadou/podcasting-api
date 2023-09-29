@@ -25,13 +25,13 @@ func (ac *AuthController) SignUp(c *gin.Context) {
 		return
 	}
 
-	user, err := ac.as.Signup(data)
+	_, err := ac.as.Signup(data)
 	if err != nil {
 		utils.ErrorsResponse(c, err)
 		return
 	}
 
-	utils.SendTokensResponse(c, user)
+	utils.SuccessResponse(c, "thanks for signing up, please check your inbox for a verification email")
 }
 
 func (ac *AuthController) Join(c *gin.Context) {
@@ -41,13 +41,13 @@ func (ac *AuthController) Join(c *gin.Context) {
 		return
 	}
 
-	user, err := ac.as.Join(data)
+	_, err := ac.as.Join(data)
 	if err != nil {
 		utils.ErrorsResponse(c, err)
 		return
 	}
 
-	utils.SendTokensResponse(c, user)
+	utils.SuccessResponse(c, "thanks for joining, please check your inbox for a verification email")
 }
 
 func (ac *AuthController) SignIn(c *gin.Context) {
@@ -59,7 +59,7 @@ func (ac *AuthController) SignIn(c *gin.Context) {
 
 	user, err := ac.as.Signin(data)
 	if err != nil {
-		utils.ErrorsResponse(c, errors.New("invalid credentials"))
+		utils.ErrorsResponse(c, err)
 		return
 	}
 
@@ -169,4 +169,16 @@ func (ac *AuthController) RefreshToken(c *gin.Context) {
 	}
 
 	utils.SendAccessTokenResponse(c, token)
+}
+
+func (ac *AuthController) Verify(c *gin.Context) {
+	token := c.Param("verificationtoken")
+
+	_, err := ac.as.Verify(token)
+	if err != nil {
+		utils.ErrorsResponse(c, errors.New("the verification token is invalid or has expired"))
+		return
+	}
+
+	utils.SuccessResponse(c, "the account has been verified, you may login now.")
 }

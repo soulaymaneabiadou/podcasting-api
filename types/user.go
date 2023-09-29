@@ -15,10 +15,11 @@ const (
 )
 
 type CreateUserInput struct {
-	Name     string `json:"name" binding:"required,min=2"`
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required,min=8,alphanum"`
-	Role     Role   `json:"role"`
+	Name              string `json:"name" binding:"required,min=2"`
+	Email             string `json:"email" binding:"required,email"`
+	Password          string `json:"password" binding:"required,min=8,alphanum"`
+	Role              Role   `json:"role"`
+	VerificationToken string `json:"-" binding:"-"`
 }
 
 type UpdateUserInput struct {
@@ -32,4 +33,7 @@ type UpdateUserInput struct {
 	ChargesEnabled      bool      `json:"charges_enabled" binding:"-"`
 	TransfersEnabled    bool      `json:"transfers_enabled" binding:"-"`
 	DetailsSubmitted    bool      `json:"details_submitted" binding:"-"`
+	VerificationToken   string    `json:"-"`
+	Verified            bool      `json:"-"`
+	VerifiedAt          time.Time `json:"-"`
 }

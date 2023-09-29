@@ -34,7 +34,7 @@ func (ur *UsersRepository) GetAll(p types.Paginator) ([]types.User, error) {
 func (ur *UsersRepository) GetById(id string) (types.User, error) {
 	var user types.User
 
-	if err := ur.db.Where("id=?", id).First(&user).Error; err != nil {
+	if err := ur.db.Where("id=?", id).Where("verified=?", true).First(&user).Error; err != nil {
 		log.Println(err)
 		return types.User{}, errors.New("user not found")
 	}
@@ -74,12 +74,23 @@ func (ur *UsersRepository) GetByResetPasswordToken(token string) (types.User, er
 	return user, nil
 }
 
+func (ur *UsersRepository) GetByVerificationToken(token string) (types.User, error) {
+	var user types.User
+
+	if err := ur.db.Where("verification_token=?", token).Where("verified=?", false).First(&user).Error; err != nil {
+		return types.User{}, err
+	}
+
+	return user, nil
+}
+
 func (ur *UsersRepository) Create(u types.CreateUserInput) (types.User, error) {
 	user := types.User{
-		Name:     u.Name,
-		Email:    u.Email,
-		Password: u.Password,
-		Role:     string(u.Role),
+		Name:              u.Name,
+		Email:             u.Email,
+		Password:          u.Password,
+		Role:              string(u.Role),
+		VerificationToken: u.VerificationToken,
 	}
 
 	if err := ur.db.Create(&user).Error; err != nil {
@@ -104,6 +115,9 @@ func (ur *UsersRepository) Update(user types.User, input types.UpdateUserInput) 
 		ChargesEnabled:      input.ChargesEnabled,
 		TransfersEnabled:    input.TransfersEnabled,
 		DetailsSubmitted:    input.DetailsSubmitted,
+		VerificationToken:   input.VerificationToken,
+		Verified:            input.Verified,
+		VerifiedAt:          input.VerifiedAt,
 	}
 
 	if payload.Password != "" {
