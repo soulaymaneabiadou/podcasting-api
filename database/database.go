@@ -55,9 +55,13 @@ func Migrate() {
 	);`)
 
 	db.Exec(`CREATE TYPE SubscriptionStatus AS ENUM (
+		'incomplete',
+		'incomplete_expired',
+		'trialing',
 		'active',
-		'cancelled',
-		'trialing'
+		'past_due',
+		'canceled',
+		'unpaid'
 	);`)
 
 	err := db.AutoMigrate(
