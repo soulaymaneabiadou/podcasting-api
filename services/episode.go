@@ -12,19 +12,20 @@ import (
 type EpisodesService struct {
 	er *repositories.EpisodesRepository
 	ps *PodcastsService
+	us *UsersService
 }
 
-func NewEpisodesService(er *repositories.EpisodesRepository, ps *PodcastsService) *EpisodesService {
-	return &EpisodesService{er: er, ps: ps}
+func NewEpisodesService(er *repositories.EpisodesRepository, ps *PodcastsService, us *UsersService) *EpisodesService {
+	return &EpisodesService{er: er, ps: ps, us: us}
 }
 
-func (us *EpisodesService) GetPodcastEpisodes(pid string, p types.Paginator) (int64, []types.Episode, error) {
-	count, err := us.er.Count(pid)
+func (es *EpisodesService) GetPodcastEpisodes(pid string, p types.Paginator) (int64, []types.Episode, error) {
+	count, err := es.er.Count(pid)
 	if err != nil {
 		return 0, []types.Episode{}, err
 	}
 
-	episodes, err := us.er.GetAll(pid, p)
+	episodes, err := es.er.GetAll(pid, p)
 	if err != nil {
 		return 0, []types.Episode{}, err
 	}
@@ -32,8 +33,8 @@ func (us *EpisodesService) GetPodcastEpisodes(pid string, p types.Paginator) (in
 	return count, episodes, nil
 }
 
-func (us *EpisodesService) GetPodcastEpisodeById(id string) (types.Episode, error) {
-	episode, err := us.er.GetById(id)
+func (es *EpisodesService) GetPodcastEpisodeById(id string) (types.Episode, error) {
+	episode, err := es.er.GetById(id)
 	if err != nil {
 		return episode, err
 	}
@@ -41,8 +42,8 @@ func (us *EpisodesService) GetPodcastEpisodeById(id string) (types.Episode, erro
 	return episode, nil
 }
 
-func (us *EpisodesService) GetPodcastEpisodeBySlug(slug string) (types.Episode, error) {
-	episode, err := us.er.GetBySlug(slug)
+func (es *EpisodesService) GetPodcastEpisodeBySlug(slug string) (types.Episode, error) {
+	episode, err := es.er.GetBySlug(slug)
 	if err != nil {
 		return episode, err
 	}
@@ -50,8 +51,8 @@ func (us *EpisodesService) GetPodcastEpisodeBySlug(slug string) (types.Episode, 
 	return episode, nil
 }
 
-func (us *EpisodesService) CreatePodcastEpisode(d types.CreateEpisodeInput) (types.Episode, error) {
-	podcast, err := us.ps.GetPodcastById(fmt.Sprint(d.PodcastId))
+func (es *EpisodesService) CreatePodcastEpisode(d types.CreateEpisodeInput) (types.Episode, error) {
+	podcast, err := es.ps.GetPodcastById(fmt.Sprint(d.PodcastId))
 	if err != nil {
 		return types.Episode{}, err
 	}
@@ -60,7 +61,19 @@ func (us *EpisodesService) CreatePodcastEpisode(d types.CreateEpisodeInput) (typ
 		return types.Episode{}, errors.New("unauthorized creator")
 	}
 
-	episode, err := us.er.Create(d)
+	// check if creator has a stripe account if visibility is set to protected
+	if d.Visibility == "protected" {
+		creator, err := es.us.GetUserById(fmt.Sprint(podcast.CreatorId))
+		if err != nil {
+			return types.Episode{}, errors.New("an error occured while checking validity, please try again later")
+		}
+
+		if creator.StripeAccountId == "" || creator.DetailsSubmitted == false {
+			return types.Episode{}, errors.New("you do not have a stripe account yet, please connect one before retrying thi action again.")
+		}
+	}
+
+	episode, err := es.er.Create(d)
 	if err != nil {
 		return types.Episode{}, err
 	}
@@ -68,8 +81,8 @@ func (us *EpisodesService) CreatePodcastEpisode(d types.CreateEpisodeInput) (typ
 	return episode, nil
 }
 
-func (us *EpisodesService) UpdatePodcastEpisode(uid, id string, i types.UpdateEpisodeInput) (types.Episode, error) {
-	episode, err := us.GetPodcastEpisodeById(id)
+func (es *EpisodesService) UpdatePodcastEpisode(uid, id string, i types.UpdateEpisodeInput) (types.Episode, error) {
+	episode, err := es.GetPodcastEpisodeById(id)
 	if err != nil {
 		return episode, err
 	}
@@ -79,7 +92,7 @@ func (us *EpisodesService) UpdatePodcastEpisode(uid, id string, i types.UpdateEp
 		return episode, errors.New("podcast episode not found")
 	}
 
-	podcast, err := us.ps.GetPodcastById(fmt.Sprint(episode.PodcastId))
+	podcast, err := es.ps.GetPodcastById(fmt.Sprint(episode.PodcastId))
 	if err != nil {
 		return episode, err
 	}
@@ -88,17 +101,17 @@ func (us *EpisodesService) UpdatePodcastEpisode(uid, id string, i types.UpdateEp
 		return episode, errors.New("unauthorized creator, cannot update")
 	}
 
-	episode, err = us.er.Update(episode, i)
+	episode, err = es.er.Update(episode, i)
 	return episode, err
 }
 
-func (us *EpisodesService) PublishPodcastEpisode(uid, id string, i types.PublishEpisodeInput) (types.Episode, error) {
-	episode, err := us.GetPodcastEpisodeById(id)
+func (es *EpisodesService) PublishPodcastEpisode(uid, id string, i types.PublishEpisodeInput) (types.Episode, error) {
+	episode, err := es.GetPodcastEpisodeById(id)
 	if err != nil {
 		return episode, err
 	}
 
-	podcast, err := us.ps.GetPodcastById(fmt.Sprint(episode.PodcastId))
+	podcast, err := es.ps.GetPodcastById(fmt.Sprint(episode.PodcastId))
 	if err != nil {
 		return episode, err
 	}
@@ -116,15 +129,15 @@ func (us *EpisodesService) PublishPodcastEpisode(uid, id string, i types.Publish
 		return episode, errors.New("podcast episode not found")
 	}
 
-	episode, err = us.er.Update(episode, types.UpdateEpisodeInput{
+	episode, err = es.er.Update(episode, types.UpdateEpisodeInput{
 		Visibility:  i.Visibility,
 		PublishedAt: time.Now(),
 	})
 	return episode, err
 }
 
-func (us *EpisodesService) DeletePodcastEpisode(uid, id string) (bool, error) {
-	episode, err := us.GetPodcastEpisodeById(id)
+func (es *EpisodesService) DeletePodcastEpisode(uid, id string) (bool, error) {
+	episode, err := es.GetPodcastEpisodeById(id)
 	if err != nil {
 		return false, err
 	}
@@ -134,7 +147,7 @@ func (us *EpisodesService) DeletePodcastEpisode(uid, id string) (bool, error) {
 		return false, errors.New("episode not found")
 	}
 
-	podcast, err := us.ps.GetPodcastById(fmt.Sprint(episode.PodcastId))
+	podcast, err := es.ps.GetPodcastById(fmt.Sprint(episode.PodcastId))
 	if err != nil {
 		return false, err
 	}
@@ -147,5 +160,5 @@ func (us *EpisodesService) DeletePodcastEpisode(uid, id string) (bool, error) {
 		return true, errors.New("cannot delete a non draft episode")
 	}
 
-	return us.er.Destroy(episode)
+	return es.er.Destroy(episode)
 }
