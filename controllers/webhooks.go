@@ -39,7 +39,7 @@ func (wc *WebhooksController) HandleStripeWebhooks(c *gin.Context) {
 		return
 	}
 
-	wc.ss.HandleWebhookEvent(event)
+	go wc.ss.HandleWebhookEvent(event)
 
 	c.Writer.WriteHeader(http.StatusOK)
 }
