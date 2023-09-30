@@ -6,6 +6,7 @@ type Podcast = models.Podcast
 
 type CreatePodcastInput struct {
 	Name        string             `json:"name" binding:"required,min=2"`
+	Headline    string             `json:"headline" binding:"required,min=2"`
 	Description string             `json:"description" binding:"required,min=2"`
 	Picture     string             `json:"picture" binding:"omitempty"`
 	SocialLinks models.SocialLinks `json:"social_links" binding:"omitempty"`
@@ -16,6 +17,7 @@ type CreatePodcastInput struct {
 
 type UpdatePodcastInput struct {
 	Description string             `json:"description" binding:"omitempty"`
+	Headline    string             `json:"headline" binding:"omitempty"`
 	Picture     string             `json:"picture" binding:"omitempty"`
 	SocialLinks models.SocialLinks `json:"social_links" binding:"omitempty"`
 	Hosts       models.StringSlice `json:"hosts" binding:"omitempty"`
