@@ -9,7 +9,7 @@ import (
 
 type Episode struct {
 	Model
-	Title       string      `json:"name" gorm:"type:varchar(255);not null;unique"`
+	Title       string      `json:"title" gorm:"type:varchar(255);not null;unique"`
 	Description string      `json:"description" gorm:"type:varchar(255);not null;unique"`
 	MediaLink   string      `json:"media_link" gorm:"type:varchar(255)"`
 	Visibility  string      `json:"visibility" gorm:"type:visibility;default:'draft'" sql:"type:Visibility"`
@@ -17,7 +17,7 @@ type Episode struct {
 	CreatorId   uint        `json:"creator_id" gorm:"type:varchar(255);not null;index"`
 	PodcastId   uint        `json:"podcast_id" gorm:"type:varchar(255);not null;index"`
 	Slug        string      `json:"slug" gorm:"type:varchar(255);not null;unique"`
-	PublishedAt time.Time   `json:"published_at" gorm:"null"`
+	PublishedAt time.Time   `json:"published_at" gorm:"default:null"`
 
 	Creator User    `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	Podcast Podcast `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
