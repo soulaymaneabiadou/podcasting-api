@@ -69,6 +69,23 @@ func (pc *EpisodesController) GetPodcastEpisode(c *gin.Context) {
 	utils.SuccessResponse(c, episode)
 }
 
+func (pc *EpisodesController) GetPodcastEpisodesBySlug(c *gin.Context) {
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	pslug := c.Param("pslug")
+
+	count, podcasts, err := pc.es.GetPodcastEpisodesBySlug(pslug, types.Paginator{Limit: limit, Page: page})
+	pagination := utils.PaginationInput{Page: page, Limit: limit, Count: count}
+
+	if err != nil {
+		log.Println(err.Error())
+		utils.ErrorsResponse(c, errors.New("an error occured while getting podcast episodes, please try again later"))
+		return
+	}
+
+	utils.PaginatedResponse(c, podcasts, pagination)
+}
+
 func (pc *EpisodesController) CreatePodcastEpisode(c *gin.Context) {
 	var data types.CreateEpisodeInput
 	if err := c.ShouldBindJSON(&data); err != nil {

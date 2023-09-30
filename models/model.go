@@ -35,6 +35,7 @@ func (o StringSlice) Value() (driver.Value, error) {
 	return strings.Join(o, ", "), nil
 }
 
+// TODO: model this with known social names like X and IG
 type SocialLinks map[string]string
 
 func (o *SocialLinks) Scan(src any) error {

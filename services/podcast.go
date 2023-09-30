@@ -46,7 +46,7 @@ func (ps *PodcastsService) GetPodcastById(id string) (types.Podcast, error) {
 	return podcast, nil
 }
 
-func (ps *PodcastsService) GetPodcastBySlug(uid string, slug string) (types.Podcast, error) {
+func (ps *PodcastsService) GetPodcastBySlug(slug string) (types.Podcast, error) {
 	podcast, err := ps.pr.GetBySlug(slug)
 	if err != nil {
 		return podcast, err

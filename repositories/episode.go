@@ -41,6 +41,28 @@ func (er *EpisodesRepository) GetAll(pid string, p types.Paginator) ([]types.Epi
 	return episodes, nil
 }
 
+func (er *EpisodesRepository) GetPublishedEpisodes(pid string, p types.Paginator) ([]types.Episode, error) {
+	var episodes []types.Episode
+
+	if err := database.Paginate(p).Where("podcast_id=?", pid).Where("published_at IS NOT NULL").Find(&episodes).Error; err != nil {
+		log.Println(err.Error())
+		return []types.Episode{}, err
+	}
+
+	return episodes, nil
+}
+
+func (er *EpisodesRepository) GetPublicEpisodes(pid string, p types.Paginator) ([]types.Episode, error) {
+	var episodes []types.Episode
+
+	if err := database.Paginate(p).Where("podcast_id=?", pid).Where("published_at IS NOT NULL").Where("visibility=?", "public").Find(&episodes).Error; err != nil {
+		log.Println(err.Error())
+		return []types.Episode{}, err
+	}
+
+	return episodes, nil
+}
+
 func (er *EpisodesRepository) GetById(id string) (types.Episode, error) {
 	var episode types.Episode
 

@@ -33,6 +33,25 @@ func (es *EpisodesService) GetPodcastEpisodes(pid string, p types.Paginator) (in
 	return count, episodes, nil
 }
 
+func (es *EpisodesService) GetPodcastEpisodesBySlug(slug string, p types.Paginator) (int64, []types.Episode, error) {
+	podcast, err := es.ps.GetPodcastBySlug(slug)
+	if err != nil {
+		return 0, []types.Episode{}, err
+	}
+
+	count, err := es.er.Count(fmt.Sprint(podcast.ID))
+	if err != nil {
+		return 0, []types.Episode{}, err
+	}
+
+	episodes, err := es.er.GetPublicEpisodes(fmt.Sprint(podcast.ID), p)
+	if err != nil {
+		return 0, []types.Episode{}, err
+	}
+
+	return count, episodes, nil
+}
+
 func (es *EpisodesService) GetPodcastEpisodeById(id string) (types.Episode, error) {
 	episode, err := es.er.GetById(id)
 	if err != nil {

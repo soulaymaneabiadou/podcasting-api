@@ -48,6 +48,18 @@ func (pc *PodcastsController) GetPodcast(c *gin.Context) {
 	utils.SuccessResponse(c, podcast)
 }
 
+func (pc *PodcastsController) GetPodcastBySlug(c *gin.Context) {
+	slug := c.Param("pslug")
+
+	podcast, err := pc.ps.GetPodcastBySlug(slug)
+	if err != nil {
+		utils.NotFoundResponse(c)
+		return
+	}
+
+	utils.SuccessResponse(c, podcast)
+}
+
 func (pc *PodcastsController) CreatePodcast(c *gin.Context) {
 	var data types.CreatePodcastInput
 	if err := c.ShouldBindJSON(&data); err != nil {
