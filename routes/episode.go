@@ -11,6 +11,8 @@ func episodesRoutes(r *gin.RouterGroup) {
 	g := r.Group("/episodes")
 	ec := CreateEpisodesController()
 
+	g.GET("/slug/:eslug", ec.GetPodcastEpisodeBySlug)
+
 	g.Use(middleware.Authenticate())
 
 	g.GET("/:eid", ec.GetPodcastEpisode)

@@ -39,36 +39,6 @@ func (pc *EpisodesController) GetPodcastEpisodes(c *gin.Context) {
 	utils.PaginatedResponse(c, podcasts, pagination)
 }
 
-func (pc *EpisodesController) GetPodcastEpisode(c *gin.Context) {
-	id := c.Param("eid")
-	uid, _ := utils.GetCtxUser(c)
-
-	episode, err := pc.es.GetPodcastEpisodeById(id)
-	if err != nil {
-		utils.NotFoundResponse(c)
-		return
-	}
-
-	// episode is public, no need to check for a subscription
-	if episode.Visibility == "public" {
-		utils.SuccessResponse(c, episode)
-		return
-	}
-
-	subscribed, err := pc.us.IsUserSubscribedToPodcast(uid, fmt.Sprint(episode.PodcastId))
-	if err != nil {
-		utils.ErrorsResponse(c, errors.New("an error occured while checking for eligibility, please try again later"))
-		return
-	}
-
-	if !subscribed {
-		utils.ErrorsResponse(c, errors.New("you haven't subscribed to this episode's podcast yet."))
-		return
-	}
-
-	utils.SuccessResponse(c, episode)
-}
-
 func (pc *EpisodesController) GetPodcastEpisodesBySlug(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
@@ -84,6 +54,48 @@ func (pc *EpisodesController) GetPodcastEpisodesBySlug(c *gin.Context) {
 	}
 
 	utils.PaginatedResponse(c, podcasts, pagination)
+}
+
+func (pc *EpisodesController) GetPodcastEpisode(c *gin.Context) {
+	id := c.Param("eid")
+
+	episode, err := pc.es.GetPodcastEpisodeById(id)
+	if err != nil {
+		utils.NotFoundResponse(c)
+		return
+	}
+
+	// episode is public, no need to check for a subscription
+	if episode.Visibility == "public" {
+		utils.SuccessResponse(c, episode)
+		return
+	}
+
+	uid, _ := utils.GetCtxUser(c)
+	subscribed, err := pc.us.IsUserSubscribedToPodcast(uid, fmt.Sprint(episode.PodcastId))
+	if err != nil {
+		utils.ErrorsResponse(c, errors.New("an error occured while checking for eligibility, please try again later"))
+		return
+	}
+
+	if !subscribed {
+		utils.ErrorsResponse(c, errors.New("you haven't subscribed to this episode's podcast yet."))
+		return
+	}
+
+	utils.SuccessResponse(c, episode)
+}
+
+func (pc *EpisodesController) GetPodcastEpisodeBySlug(c *gin.Context) {
+	slug := c.Param("eslug")
+
+	episode, err := pc.es.GetPodcastEpisodeBySlug(slug)
+	if err != nil {
+		utils.NotFoundResponse(c)
+		return
+	}
+
+	utils.SuccessResponse(c, episode)
 }
 
 func (pc *EpisodesController) CreatePodcastEpisode(c *gin.Context) {

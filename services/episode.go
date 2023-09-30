@@ -62,7 +62,7 @@ func (es *EpisodesService) GetPodcastEpisodeById(id string) (types.Episode, erro
 }
 
 func (es *EpisodesService) GetPodcastEpisodeBySlug(slug string) (types.Episode, error) {
-	episode, err := es.er.GetBySlug(slug)
+	episode, err := es.er.GetPublicEpisodeBySlug(slug)
 	if err != nil {
 		return episode, err
 	}

@@ -77,7 +77,18 @@ func (er *EpisodesRepository) GetById(id string) (types.Episode, error) {
 func (er *EpisodesRepository) GetBySlug(slug string) (types.Episode, error) {
 	var episode types.Episode
 
-	if err := er.db.Where("slug=?", slug).First(&episode).Error; err != nil {
+	if err := er.db.Where("slug=?", slug).Where("published_at IS NOT NULL").First(&episode).Error; err != nil {
+		log.Println(err, episode)
+		return types.Episode{}, err
+	}
+
+	return episode, nil
+}
+
+func (er *EpisodesRepository) GetPublicEpisodeBySlug(slug string) (types.Episode, error) {
+	var episode types.Episode
+
+	if err := er.db.Where("slug=?", slug).Where("published_at IS NOT NULL").Where("visibility=?", "public").First(&episode).Error; err != nil {
 		log.Println(err, episode)
 		return types.Episode{}, err
 	}
