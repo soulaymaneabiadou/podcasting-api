@@ -17,7 +17,7 @@ func NewEmailService(g gateway.EmailGateway) *EmailService {
 }
 
 func (es *EmailService) createVerificationUrl(token string) string {
-	return fmt.Sprintf("%s/api/v1/auth/verify/%s", os.Getenv("PUBLIC_URL"), token)
+	return fmt.Sprintf("%s/auth/verify/%s", os.Getenv("PUBLIC_URL"), token)
 }
 
 func (es *EmailService) SendListenerWelcomeEmail(user types.User, token string) {
