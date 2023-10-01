@@ -3,6 +3,7 @@ package utils
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -24,18 +25,18 @@ func validationErrorToText(e validator.FieldError) string {
 	return fmt.Sprintf("%s is not valid", e.Field())
 }
 
-func parseError(err error) []string {
+func parseError(err error) map[string]string {
 	var ve validator.ValidationErrors
 
 	if errors.As(err, &ve) {
-		out := make([]string, len(ve))
+		out := make(map[string]string, len(ve))
 
-		for i, fe := range ve {
-			out[i] = validationErrorToText(fe)
+		for _, fe := range ve {
+			out[strings.ToLower(fe.Field())] = validationErrorToText(fe)
 		}
 
 		return out
 	} else {
-		return []string{err.Error()}
+		return map[string]string{"error": err.Error()}
 	}
 }
