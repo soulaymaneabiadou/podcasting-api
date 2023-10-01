@@ -7,6 +7,7 @@ import (
 	"podcast/gateway"
 	"podcast/routes"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,6 +23,8 @@ func init() {
 func (a *App) Serve() {
 	server := gin.Default()
 	server.SetTrustedProxies(nil)
+
+	server.Use(cors.Default())
 
 	g := server.Group("/api").Group("/v1")
 
