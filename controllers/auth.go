@@ -21,39 +21,39 @@ func NewAuthController(as *services.AuthService) *AuthController {
 func (ac *AuthController) SignUp(c *gin.Context) {
 	var data types.SignupInput
 	if err := c.ShouldBindJSON(&data); err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "Please provide valid information to sign up")
 		return
 	}
 
 	_, err := ac.as.Signup(data)
 	if err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, err.Error())
 		return
 	}
 
-	utils.SuccessResponse(c, "thanks for signing up, please check your inbox for a verification email")
+	utils.MessageResponse(c, "Thanks for signing up, please check your inbox for a verification email")
 }
 
 func (ac *AuthController) Join(c *gin.Context) {
 	var data types.SignupInput
 	if err := c.ShouldBindJSON(&data); err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "Please provide valid information to create your account")
 		return
 	}
 
 	_, err := ac.as.Join(data)
 	if err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, err.Error())
 		return
 	}
 
-	utils.SuccessResponse(c, "thanks for joining, please check your inbox for a verification email")
+	utils.MessageResponse(c, "Thanks for joining, please check your inbox for a verification email")
 }
 
 func (ac *AuthController) SignIn(c *gin.Context) {
 	var data types.SigninInput
 	if err := c.ShouldBindJSON(&data); err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "Please provide a valid email and a password to sign into your account")
 		return
 	}
 
@@ -61,7 +61,7 @@ func (ac *AuthController) SignIn(c *gin.Context) {
 
 	user, err := ac.as.Signin(data)
 	if err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, err.Error())
 		return
 	}
 
