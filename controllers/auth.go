@@ -120,17 +120,17 @@ func (ac *AuthController) UpdatePassword(c *gin.Context) {
 func (ac *AuthController) ForgotPassword(c *gin.Context) {
 	var data types.ForgotPasswordInput
 	if err := c.ShouldBindJSON(&data); err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "Please provide a valid email to request a password reset")
 		return
 	}
 
-	token, err := ac.as.ForgotPassword(data)
+	_, err := ac.as.ForgotPassword(data)
 	if err != nil {
-		utils.ErrorsResponse(c, errors.New("the user does not exist"))
+		utils.ErrorResponse(c, errors.New("email does not exist"), "The email you provided does not exist")
 		return
 	}
 
-	utils.SuccessResponse(c, token)
+	utils.MessageResponse(c, "An email with instructions has been sent to your inbox.")
 }
 
 func (ac *AuthController) ResetPassword(c *gin.Context) {
@@ -139,17 +139,17 @@ func (ac *AuthController) ResetPassword(c *gin.Context) {
 	token := c.Param("resettoken")
 
 	if err := c.ShouldBindJSON(&data); err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "Please provide a valid password to reset access to your account")
 		return
 	}
 
 	_, err := ac.as.ResetPassword(token, data.Password)
 	if err != nil {
-		utils.ErrorsResponse(c, errors.New("the reset token is invalid or has expired"))
+		utils.ErrorResponse(c, errors.New("the reset token is invalid or has expired"), "The link has expired, please request a new reset email")
 		return
 	}
 
-	utils.SuccessResponse(c, "the password has been reseted")
+	utils.MessageResponse(c, "Your password has been resetted, you might login to your account now")
 }
 
 func (ac *AuthController) SignOut(c *gin.Context) {
