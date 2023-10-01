@@ -157,3 +157,25 @@ func ErrorsResponse(c *gin.Context, err error) {
 
 	c.JSON(http.StatusBadRequest, res)
 }
+
+func MessageResponse(c *gin.Context, msg string) {
+	res := response{
+		Message: msg,
+		Success: true,
+		Data:    nil,
+		Errors:  nil,
+	}
+
+	c.JSON(http.StatusOK, res)
+}
+
+func ErrorResponse(c *gin.Context, err error, msg string) {
+	res := response{
+		Message: msg,
+		Success: false,
+		Data:    nil,
+		Errors:  parseError(err),
+	}
+
+	c.JSON(http.StatusBadRequest, res)
+}
