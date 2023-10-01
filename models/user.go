@@ -15,15 +15,15 @@ type User struct {
 	Name                string    `json:"name" gorm:"type:varchar(255)"`
 	Email               string    `json:"email" gorm:"type:varchar(255);not null;unique"`
 	Password            string    `json:"-" gorm:"type:varchar(255);not null"`
-	ResetPasswordToken  string    `json:"-" gorm:"type:varchar(255);null;unique"`
+	ResetPasswordToken  string    `json:"-" gorm:"type:varchar(255);default:NULL;unique"`
 	ResetPasswordExpire time.Time `json:"-"`
 	Role                string    `json:"role" gorm:"type:role;default:'listener'" sql:"type:Role"`
-	StripeCustomerId    string    `json:"stripe_customer_id" gorm:"type:varchar(255);null;unique"`
-	StripeAccountId     string    `json:"stripe_account_id" gorm:"type:varchar(255);null;unique"`
+	StripeCustomerId    string    `json:"stripe_customer_id" gorm:"type:varchar(255);default:NULL;unique"`
+	StripeAccountId     string    `json:"stripe_account_id" gorm:"type:varchar(255);default:NULL;unique"`
 	ChargesEnabled      bool      `json:"charges_enabled" gorm:"default:false"`
 	TransfersEnabled    bool      `json:"transfers_enabled" gorm:"default:false"`
 	DetailsSubmitted    bool      `json:"details_submitted" gorm:"default:false"`
-	VerificationToken   string    `json:"-" gorm:"type:varchar(255);null;unique"`
+	VerificationToken   string    `json:"-" gorm:"type:varchar(255);default:NULL;unique"`
 	Verified            bool      `json:"-" gorm:"default:false"`
 	VerifiedAt          time.Time `json:"-"`
 	SigninCount         int64     `json:"-" gorm:"default:0;not null"`
