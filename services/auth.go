@@ -22,7 +22,7 @@ func NewAuthService(ur *repositories.UsersRepository, es *EmailService) *AuthSer
 func (as *AuthService) Signup(u types.SignupInput) (types.User, error) {
 	user, err := as.ur.GetByEmail(u.Email)
 	if user.ID != 0 || err == nil {
-		return types.User{}, errors.New("email already exists")
+		return types.User{}, errors.New("The provided email address already exists")
 	}
 
 	token, err := hasher.GenerateSecureToken(20)
@@ -54,13 +54,13 @@ func (as *AuthService) Signup(u types.SignupInput) (types.User, error) {
 func (as *AuthService) Join(u types.SignupInput) (types.User, error) {
 	user, err := as.ur.GetByEmail(u.Email)
 	if user.ID != 0 || err == nil {
-		return types.User{}, errors.New("email already exists")
+		return types.User{}, errors.New("The provided email address already exists")
 	}
 
 	token, err := hasher.GenerateSecureToken(20)
 	if err != nil {
 		log.Println(err)
-		return types.User{}, errors.New("an error occured while joining, please try again later with valid information")
+		return types.User{}, errors.New("An error occured while joining, please try again later.")
 	}
 
 	hash := hasher.GenerateTokenHash(token)
@@ -75,7 +75,7 @@ func (as *AuthService) Join(u types.SignupInput) (types.User, error) {
 
 	user, err = as.ur.Create(data)
 	if err != nil {
-		return types.User{}, errors.New("an error occured while joining, please try again later with valid information")
+		return types.User{}, errors.New("An error occured while joining, please try again later with valid information")
 	}
 
 	go as.es.SendCreatorWelcomeEmail(user, token)
@@ -87,17 +87,17 @@ func (as *AuthService) Signin(u types.SigninInput) (types.User, error) {
 	user, err := as.ur.GetByEmail(u.Email)
 	if err != nil {
 		log.Println(err)
-		return types.User{}, errors.New("invalid credentials")
-	}
-
-	if !user.Verified {
-		return types.User{}, errors.New("user has not been verified yet, please check your inbox for more info.")
+		return types.User{}, errors.New("Invalid credentials")
 	}
 
 	err = hasher.VerifyPassword(u.Password, user.Password)
 	if err != nil {
 		log.Println(err)
-		return types.User{}, errors.New("invalid credentials")
+		return types.User{}, errors.New("Invalid credentials")
+	}
+
+	if !user.Verified {
+		return types.User{}, errors.New("Your account has not been verified yet, please check your inbox for more info.")
 	}
 
 	as.ur.Update(user, types.UpdateUserInput{
