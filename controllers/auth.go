@@ -178,9 +178,9 @@ func (ac *AuthController) Verify(c *gin.Context) {
 
 	_, err := ac.as.Verify(token)
 	if err != nil {
-		utils.ErrorsResponse(c, errors.New("the verification token is invalid or has expired"))
+		utils.ErrorResponse(c, err, "The provided verification token is invalid or has expired, please check your inbox for the correct one.")
 		return
 	}
 
-	utils.SuccessResponse(c, "the account has been verified, you may login now.")
+	utils.MessageResponse(c, "Your account has been verified, you may login now.")
 }

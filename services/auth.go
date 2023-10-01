@@ -206,7 +206,7 @@ func (as *AuthService) Verify(token string) (bool, error) {
 	user, err := as.ur.GetByVerificationToken(hash)
 	if err != nil {
 		log.Println(err)
-		return false, err
+		return false, errors.New("the verification token is invalid or has expired")
 	}
 
 	as.ur.Update(user, types.UpdateUserInput{
