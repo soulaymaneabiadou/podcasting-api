@@ -6,6 +6,7 @@ import (
 	"podcast/database"
 	"podcast/gateway"
 	"podcast/routes"
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -24,7 +25,14 @@ func (a *App) Serve() {
 	server := gin.Default()
 	server.SetTrustedProxies(nil)
 
-	server.Use(cors.Default())
+	config := cors.Config{
+		AllowOrigins:     []string{os.Getenv("PUBLIC_URL")},
+		AllowCredentials: true,
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type"},
+		MaxAge:           12 * time.Hour,
+	}
+	server.Use(cors.New(config))
 
 	g := server.Group("/api").Group("/v1")
 
