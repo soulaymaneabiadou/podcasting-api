@@ -103,18 +103,18 @@ func (ac *AuthController) UpdatePassword(c *gin.Context) {
 
 	var data types.UpdatePasswordInput
 	if err := c.ShouldBindJSON(&data); err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "Please provide your current password and a new valid password")
 		return
 	}
 
 	_, err := ac.as.UpdatePassword(id, data)
 	if err != nil {
-		utils.ErrorsResponse(c, errors.New("invalid credentials"))
+		utils.ErrorResponse(c, errors.New("invalid credentials"), "The provided current password is invalid")
 		return
 	}
 
-	utils.ClearAuthCookies(c)
-	utils.SuccessResponse(c, "the password has been updated")
+	// utils.ClearAuthCookies(c)
+	utils.MessageResponse(c, "your password has been updated successfully")
 }
 
 func (ac *AuthController) ForgotPassword(c *gin.Context) {
