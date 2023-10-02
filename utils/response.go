@@ -88,7 +88,7 @@ func SendTokensResponse(c *gin.Context, user types.User) {
 	SetAccessCookie(c, accessToken)
 	SetRefreshCookie(c, refreshToken)
 
-	res := gin.H{"access_token": accessToken, "refresh_token": refreshToken}
+	res := gin.H{"access_token": accessToken, "refresh_token": refreshToken, "user": user}
 	c.JSON(http.StatusOK, res)
 }
 
