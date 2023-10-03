@@ -8,7 +8,7 @@ package services
 
 import (
 	"podcast/database"
-	"podcast/gateway"
+	"podcast/gateways/mailing"
 	"podcast/repositories"
 )
 
@@ -17,7 +17,7 @@ import (
 func CreateAuthService() *AuthService {
 	db := database.Connection()
 	usersRepository := repositories.NewUsersRepository(db)
-	smtpMailer := gateway.NewSMTPMailer()
+	smtpMailer := mailing.NewSMTPMailer()
 	emailService := NewEmailService(smtpMailer)
 	authService := NewAuthService(usersRepository, emailService)
 	return authService

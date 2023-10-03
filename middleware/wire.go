@@ -5,7 +5,7 @@ package middleware
 
 import (
 	"podcast/database"
-	"podcast/gateway"
+	"podcast/gateways/mailing"
 	"podcast/repositories"
 	"podcast/services"
 
@@ -15,9 +15,9 @@ import (
 func CreateAuthService() *services.AuthService {
 	wire.Build(
 		services.NewAuthService,
-		wire.Bind(new(gateway.EmailGateway), new(*gateway.SMTPMailer)),
+		wire.Bind(new(mailing.EmailGateway), new(*mailing.SMTPMailer)),
 		services.NewEmailService,
-		gateway.NewSMTPMailer,
+		mailing.NewSMTPMailer,
 		repositories.NewUsersRepository,
 		database.Connection,
 		// AuthServiceSet,
@@ -32,9 +32,9 @@ func CreateAuthService() *services.AuthService {
 // )
 
 // var EmailServiceSet = wire.NewSet(
-// 	wire.Bind(new(gateway.EmailGateway), new(*gateway.SMTPGateway)),
+// 	wire.Bind(new(mailing.EmailGateway), new(*mailing.SMTPGateway)),
 // 	services.NewEmailService,
-// 	gateway.NewSMTPGateway,
+// 	mailing.NewSMTPGateway,
 // )
 
 // var AuthServiceSet = wire.NewSet(

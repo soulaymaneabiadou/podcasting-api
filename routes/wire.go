@@ -6,7 +6,8 @@ package routes
 import (
 	"podcast/controllers"
 	"podcast/database"
-	"podcast/gateway"
+	"podcast/gateways/mailing"
+	"podcast/gateways/stripe"
 	"podcast/repositories"
 	"podcast/services"
 
@@ -18,8 +19,8 @@ func CreateAuthController() *controllers.AuthController {
 		controllers.NewAuthController,
 		services.NewAuthService,
 		services.NewEmailService,
-		wire.Bind(new(gateway.EmailGateway), new(*gateway.SMTPMailer)),
-		gateway.NewSMTPMailer,
+		wire.Bind(new(mailing.EmailGateway), new(*mailing.SMTPMailer)),
+		mailing.NewSMTPMailer,
 		repositories.NewUsersRepository,
 		database.Connection,
 		// AuthControllerSet,
@@ -78,7 +79,7 @@ var stripeServiceSet = wire.NewSet(
 	services.NewUsersService,
 	repositories.NewUsersRepository,
 	services.NewStripeService,
-	gateway.NewStripeGateway,
+	stripe.NewStripeGateway,
 	repositories.NewSubscriptionsRepository,
 	database.Connection,
 )

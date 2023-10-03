@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"podcast/gateway"
+	gateway "podcast/gateways/stripe"
 	"podcast/repositories"
 	"podcast/types"
 	"strconv"

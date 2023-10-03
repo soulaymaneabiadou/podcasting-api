@@ -10,7 +10,8 @@ import (
 	"github.com/google/wire"
 	"podcast/controllers"
 	"podcast/database"
-	"podcast/gateway"
+	"podcast/gateways/mailing"
+	"podcast/gateways/stripe"
 	"podcast/repositories"
 	"podcast/services"
 )
@@ -20,7 +21,7 @@ import (
 func CreateAuthController() *controllers.AuthController {
 	db := database.Connection()
 	usersRepository := repositories.NewUsersRepository(db)
-	smtpMailer := gateway.NewSMTPMailer()
+	smtpMailer := mailing.NewSMTPMailer()
 	emailService := services.NewEmailService(smtpMailer)
 	authService := services.NewAuthService(usersRepository, emailService)
 	authController := controllers.NewAuthController(authService)
@@ -33,7 +34,7 @@ func CreatePodcastsController() *controllers.PodcastsController {
 	usersRepository := repositories.NewUsersRepository(db)
 	subscriptionsRepository := repositories.NewSubscriptionsRepository(db)
 	usersService := services.NewUsersService(usersRepository, subscriptionsRepository)
-	stripeGateway := gateway.NewStripeGateway()
+	stripeGateway := stripe.NewStripeGateway()
 	stripeService := services.NewStripeService(stripeGateway, subscriptionsRepository, usersService)
 	podcastsService := services.NewPodcastsService(podcastsRepository, usersService, stripeService)
 	podcastsController := controllers.NewPodcastsController(podcastsService)
@@ -47,7 +48,7 @@ func CreateEpisodesController() *controllers.EpisodesController {
 	usersRepository := repositories.NewUsersRepository(db)
 	subscriptionsRepository := repositories.NewSubscriptionsRepository(db)
 	usersService := services.NewUsersService(usersRepository, subscriptionsRepository)
-	stripeGateway := gateway.NewStripeGateway()
+	stripeGateway := stripe.NewStripeGateway()
 	stripeService := services.NewStripeService(stripeGateway, subscriptionsRepository, usersService)
 	podcastsService := services.NewPodcastsService(podcastsRepository, usersService, stripeService)
 	episodesService := services.NewEpisodesService(episodesRepository, podcastsService, usersService)
@@ -56,7 +57,7 @@ func CreateEpisodesController() *controllers.EpisodesController {
 }
 
 func CreateWebhooksController() *controllers.WebhooksController {
-	stripeGateway := gateway.NewStripeGateway()
+	stripeGateway := stripe.NewStripeGateway()
 	db := database.Connection()
 	subscriptionsRepository := repositories.NewSubscriptionsRepository(db)
 	usersRepository := repositories.NewUsersRepository(db)
@@ -67,7 +68,7 @@ func CreateWebhooksController() *controllers.WebhooksController {
 }
 
 func CreateStripeController() *controllers.StripeController {
-	stripeGateway := gateway.NewStripeGateway()
+	stripeGateway := stripe.NewStripeGateway()
 	db := database.Connection()
 	subscriptionsRepository := repositories.NewSubscriptionsRepository(db)
 	usersRepository := repositories.NewUsersRepository(db)
@@ -81,4 +82,4 @@ func CreateStripeController() *controllers.StripeController {
 
 var podcastUserStripeSet = wire.NewSet(services.NewPodcastsService, repositories.NewPodcastsRepository, stripeServiceSet)
 
-var stripeServiceSet = wire.NewSet(services.NewUsersService, repositories.NewUsersRepository, services.NewStripeService, gateway.NewStripeGateway, repositories.NewSubscriptionsRepository, database.Connection)
+var stripeServiceSet = wire.NewSet(services.NewUsersService, repositories.NewUsersRepository, services.NewStripeService, stripe.NewStripeGateway, repositories.NewSubscriptionsRepository, database.Connection)

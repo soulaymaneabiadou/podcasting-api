@@ -3,16 +3,16 @@ package services
 import (
 	"fmt"
 	"os"
-	"podcast/gateway"
+	"podcast/gateways/mailing"
 	"podcast/types"
 	"time"
 )
 
 type EmailService struct {
-	g gateway.EmailGateway
+	g mailing.EmailGateway
 }
 
-func NewEmailService(g gateway.EmailGateway) *EmailService {
+func NewEmailService(g mailing.EmailGateway) *EmailService {
 	return &EmailService{g: g}
 }
 
@@ -28,7 +28,7 @@ func (es *EmailService) SendListenerWelcomeEmail(user types.User, token string) 
 		"VerificationURL": es.createVerificationUrl(token),
 	}
 
-	es.g.SendEmail(gateway.EmailPayload{
+	es.g.SendEmail(mailing.EmailPayload{
 		Receiver: user,
 		Subject:  subject,
 		Template: "welcome.html",
@@ -44,7 +44,7 @@ func (es *EmailService) SendCreatorWelcomeEmail(user types.User, token string) {
 		"VerificationURL": es.createVerificationUrl(token),
 	}
 
-	es.g.SendEmail(gateway.EmailPayload{
+	es.g.SendEmail(mailing.EmailPayload{
 		Receiver: user,
 		Subject:  subject,
 		Template: "welcome.html",
@@ -61,7 +61,7 @@ func (es *EmailService) SendPasswordUpdatedEmail(user types.User) {
 		"URL":     os.Getenv("PUBLIC_URL") + "/auth/me",
 	}
 
-	es.g.SendEmail(gateway.EmailPayload{
+	es.g.SendEmail(mailing.EmailPayload{
 		Receiver: user,
 		Subject:  subject,
 		Template: "password-updated.html",
@@ -77,7 +77,7 @@ func (es *EmailService) SendPasswordResetTokenEmail(user types.User, token strin
 		"URL":     os.Getenv("PUBLIC_URL") + "/auth/resetpassword/" + token,
 	}
 
-	es.g.SendEmail(gateway.EmailPayload{
+	es.g.SendEmail(mailing.EmailPayload{
 		Receiver: user,
 		Subject:  subject,
 		Template: "password-reset.html",
@@ -93,7 +93,7 @@ func (es *EmailService) SendPasswordResettedEmail(user types.User) {
 		"URL":     os.Getenv("PUBLIC_URL") + "/auth/me",
 	}
 
-	es.g.SendEmail(gateway.EmailPayload{
+	es.g.SendEmail(mailing.EmailPayload{
 		Receiver: user,
 		Subject:  subject,
 		Template: "password-resetted.html",

@@ -8,7 +8,7 @@ package middleware
 
 import (
 	"podcast/database"
-	"podcast/gateway"
+	"podcast/gateways/mailing"
 	"podcast/repositories"
 	"podcast/services"
 )
@@ -18,7 +18,7 @@ import (
 func CreateAuthService() *services.AuthService {
 	db := database.Connection()
 	usersRepository := repositories.NewUsersRepository(db)
-	smtpMailer := gateway.NewSMTPMailer()
+	smtpMailer := mailing.NewSMTPMailer()
 	emailService := services.NewEmailService(smtpMailer)
 	authService := services.NewAuthService(usersRepository, emailService)
 	return authService

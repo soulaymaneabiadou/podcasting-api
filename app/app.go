@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 	"podcast/database"
-	"podcast/gateway"
+	"podcast/gateways/stripe"
 	"podcast/routes"
 	"time"
 
@@ -18,7 +18,7 @@ type App struct {
 func init() {
 	database.Connect()
 	database.Migrate() // should be enabled only on a new database
-	gateway.InitializeStripeGateway()
+	stripe.InitializeStripeGateway()
 }
 
 func (a *App) Serve() {
