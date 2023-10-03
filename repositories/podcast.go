@@ -63,15 +63,16 @@ func (ur *PodcastsRepository) GetBySlug(slug string) (types.Podcast, error) {
 	return podcast, nil
 }
 
-func (ur *PodcastsRepository) Create(p types.CreatePodcastInput) (types.Podcast, error) {
+func (ur *PodcastsRepository) Create(input types.CreatePodcastInput) (types.Podcast, error) {
 	podcast := types.Podcast{
-		Name:        p.Name,
-		Description: p.Description,
-		CreatorId:   p.CreatorId,
-		Picture:     p.Picture,
-		SocialLinks: p.SocialLinks,
-		Hosts:       p.Hosts,
-		Tags:        p.Tags,
+		Name:        input.Name,
+		Headline:    input.Headline,
+		Description: input.Description,
+		CreatorId:   input.CreatorId,
+		Picture:     input.Picture,
+		SocialLinks: input.SocialLinks,
+		Hosts:       input.Hosts,
+		Tags:        input.Tags,
 	}
 
 	if err := ur.db.Create(&podcast).Error; err != nil {
@@ -89,6 +90,7 @@ func (ur *PodcastsRepository) Update(podcast types.Podcast, input types.UpdatePo
 		SocialLinks: input.SocialLinks,
 		Hosts:       input.Hosts,
 		Tags:        input.Tags,
+		Headline:    input.Headline,
 	}
 
 	if payload.Name != "" {
