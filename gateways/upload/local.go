@@ -6,8 +6,6 @@ import (
 	"mime/multipart"
 	"os"
 	"path/filepath"
-	"podcast/hasher"
-	"strings"
 )
 
 type LocalFileHandler struct {
@@ -18,9 +16,7 @@ func NewLocalFileHandler() *LocalFileHandler {
 }
 
 func (s *LocalFileHandler) Upload(file *multipart.FileHeader) (string, error) {
-	f := strings.Split(file.Filename, ".")
-	name, _ := hasher.GenerateSecureToken(6)
-	dst := filepath.Join("tmp", f[0]+"-"+name+"."+f[1])
+	dst := randomizeFileName(file.Filename)
 
 	src, err := file.Open()
 	if err != nil {
