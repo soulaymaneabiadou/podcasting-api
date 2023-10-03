@@ -8,6 +8,7 @@ import (
 	"podcast/database"
 	"podcast/gateways/mailing"
 	"podcast/gateways/stripe"
+	"podcast/gateways/upload"
 	"podcast/repositories"
 	"podcast/services"
 
@@ -33,6 +34,8 @@ func CreatePodcastsController() *controllers.PodcastsController {
 	wire.Build(
 		controllers.NewPodcastsController,
 		podcastUserStripeSet,
+		wire.Bind(new(upload.FileHandler), new(*upload.LocalFileHandler)),
+		upload.NewLocalFileHandler,
 	)
 
 	return &controllers.PodcastsController{}

@@ -1,10 +1,13 @@
 package controllers
 
 import (
+	"encoding/json"
 	"errors"
 	"log"
 	"strconv"
+	"strings"
 
+	"podcast/gateways/upload"
 	"podcast/services"
 	"podcast/types"
 	"podcast/utils"
@@ -14,10 +17,11 @@ import (
 
 type PodcastsController struct {
 	ps *services.PodcastsService
+	fh upload.FileHandler
 }
 
-func NewPodcastsController(ps *services.PodcastsService) *PodcastsController {
-	return &PodcastsController{ps: ps}
+func NewPodcastsController(ps *services.PodcastsService, fh upload.FileHandler) *PodcastsController {
+	return &PodcastsController{ps: ps, fh: fh}
 }
 
 func (pc *PodcastsController) GetPodcasts(c *gin.Context) {
@@ -62,9 +66,30 @@ func (pc *PodcastsController) GetPodcastBySlug(c *gin.Context) {
 
 func (pc *PodcastsController) CreatePodcast(c *gin.Context) {
 	var data types.CreatePodcastInput
-	if err := c.ShouldBindJSON(&data); err != nil {
-		utils.ErrorsResponse(c, err)
+
+	picture, err := c.FormFile("picture")
+	if err != nil {
+		utils.ErrorResponse(c, err, "Please include a picture in a proper format")
 		return
+	}
+
+	picturePath, err := pc.fh.Upload(picture)
+	if err != nil {
+		utils.ErrorResponse(c, err, "An error occured while uploading the provided picture, please try again later")
+		return
+	}
+
+	var socials types.SocialLinks
+	json.Unmarshal([]byte(c.PostForm("social_links")), &socials)
+
+	data = types.CreatePodcastInput{
+		Name:        c.PostForm("name"),
+		Headline:    c.PostForm("headline"),
+		Description: c.PostForm("description"),
+		Hosts:       strings.Split(c.PostForm("hosts"), ", "),
+		Tags:        strings.Split(c.PostForm("tags"), ", "),
+		Picture:     picturePath,
+		SocialLinks: socials,
 	}
 
 	u, _ := c.Get("user")
