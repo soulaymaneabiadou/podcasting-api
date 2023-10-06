@@ -2,8 +2,6 @@ package models
 
 import (
 	"database/sql/driver"
-	"encoding/json"
-	"errors"
 	"strings"
 	"time"
 
@@ -35,22 +33,7 @@ func (o StringSlice) Value() (driver.Value, error) {
 	return strings.Join(o, ", "), nil
 }
 
-// TODO: model this with known social names like X and IG
-type SocialLinks map[string]string
-
-func (o *SocialLinks) Scan(src any) error {
-	bytes, ok := src.([]byte)
-	if !ok {
-		return errors.New("map `src` value cannot cast to []byte")
-	}
-
-	return json.Unmarshal(bytes, o)
-}
-
-func (o SocialLinks) Value() (driver.Value, error) {
-	if len(o) == 0 {
-		return nil, nil
-	}
-
-	return json.Marshal(o)
+type SocialLinks struct {
+	Instagram string
+	Twitter   string
 }
