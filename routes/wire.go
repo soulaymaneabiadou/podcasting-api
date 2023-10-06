@@ -34,8 +34,10 @@ func CreatePodcastsController() *controllers.PodcastsController {
 	wire.Build(
 		controllers.NewPodcastsController,
 		podcastUserStripeSet,
-		wire.Bind(new(upload.FileHandler), new(*upload.LocalFileHandler)),
-		upload.NewLocalFileHandler,
+		// wire.Bind(new(upload.FileHandler), new(*upload.LocalFileHandler)),
+		wire.Bind(new(upload.FileHandler), new(*upload.S3Handler)),
+		upload.NewS3Handler,
+		// upload.NewLocalFileHandler,
 	)
 
 	return &controllers.PodcastsController{}

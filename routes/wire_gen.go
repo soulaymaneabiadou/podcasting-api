@@ -38,8 +38,8 @@ func CreatePodcastsController() *controllers.PodcastsController {
 	stripeGateway := stripe.NewStripeGateway()
 	stripeService := services.NewStripeService(stripeGateway, subscriptionsRepository, usersService)
 	podcastsService := services.NewPodcastsService(podcastsRepository, usersService, stripeService)
-	localFileHandler := upload.NewLocalFileHandler()
-	podcastsController := controllers.NewPodcastsController(podcastsService, localFileHandler)
+	s3Handler := upload.NewS3Handler()
+	podcastsController := controllers.NewPodcastsController(podcastsService, s3Handler)
 	return podcastsController
 }
 
