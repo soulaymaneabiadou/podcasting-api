@@ -17,8 +17,17 @@ type App struct {
 
 func init() {
 	database.Connect()
-	database.Migrate() // should be enabled only on a new database
 	stripe.InitializeStripeGateway()
+}
+
+func (a *App) Migrate() {
+	database.Migrate()
+}
+
+func (a *App) Seed() {
+	database.Drop()
+	a.Migrate()
+	database.Seed()
 }
 
 func (a *App) Serve() {

@@ -6,6 +6,14 @@ endef
 up:
 	docker compose -f compose.dev.yml up -d --build --force-recreate
 
+migrate:
+	$(call setup_env,local)
+	go run . db:migrate
+
+seed:
+	$(call setup_env,local)
+	go run . db:seed
+
 dev:
 # go install github.com/cosmtrek/air@latest
 	$(call setup_env,local)
