@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -28,38 +27,38 @@ func (sc *StripeController) Connect(c *gin.Context) {
 
 	user, err := sc.us.GetUserById(id)
 	if err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "The user does not exist")
 		return
 	}
 
 	if user.DetailsSubmitted && user.ChargesEnabled && user.TransfersEnabled {
-		utils.ErrorsResponse(c, errors.New("user account already setted up"))
+		utils.ErrorResponse(c, err, "The user already has a completed account")
 		return
 	}
 
 	if user.StripeAccountId == "" {
 		acct, err = sc.ss.CreateAccount(user)
 		if err != nil {
-			utils.ErrorsResponse(c, err)
+			utils.ErrorResponse(c, err, "Unable to create a stripe account, please try again later")
 			return
 		}
 
 		user, err = sc.us.SetStripeAccountId(user, fmt.Sprint(acct.ID))
 		if err != nil {
-			utils.ErrorsResponse(c, err)
+			utils.ErrorResponse(c, err, "Unable to set the user's stripe account id, please try again later")
 			return
 		}
 	} else {
 		acct, err = sc.ss.GetAccount(user.StripeAccountId)
 		if err != nil {
-			utils.ErrorsResponse(c, err)
+			utils.ErrorResponse(c, err, "Unable to find a stripe account for the provided user")
 			return
 		}
 	}
 
 	link, err := sc.ss.CreateAccountLink(acct)
 	if err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "unable to create a stripe onboarding link, please check in later")
 		return
 	}
 
@@ -73,24 +72,24 @@ func (sc *StripeController) Onboard(c *gin.Context) {
 
 	user, err := sc.us.GetUserById(id)
 	if err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "User not found")
 		return
 	}
 
 	if user.DetailsSubmitted && user.ChargesEnabled && user.TransfersEnabled {
-		utils.ErrorsResponse(c, errors.New("user account already setted up"))
+		utils.ErrorResponse(c, err, "The user's account is already complete")
 		return
 	}
 
 	acct, err := sc.ss.GetAccount(user.StripeAccountId)
 	if err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "Unable to find a stripe account, please try to connect a new one")
 		return
 	}
 
 	link, err := sc.ss.CreateAccountLink(acct)
 	if err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "Unable to create an onboarding link, please try again later")
 		return
 	}
 
@@ -104,18 +103,18 @@ func (sc *StripeController) CustomerPortal(c *gin.Context) {
 
 	user, err := sc.us.GetUserById(id)
 	if err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "User not found")
 		return
 	}
 
 	if user.StripeCustomerId == "" {
-		utils.ErrorsResponse(c, errors.New("user is not a customer yet"))
+		utils.ErrorResponse(c, err, "No customer account was found, please create a customer account first")
 		return
 	}
 
 	session, err := sc.ss.CreateCustomerPortalSession(user.StripeCustomerId)
 	if err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "Unable to create a customer portal, please retry later")
 		return
 	}
 
@@ -129,18 +128,18 @@ func (sc *StripeController) ConnectAccount(c *gin.Context) {
 
 	user, err := sc.us.GetUserById(id)
 	if err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "User not found")
 		return
 	}
 
 	if user.StripeAccountId == "" {
-		utils.ErrorsResponse(c, errors.New("user is not a customer yet"))
+		utils.ErrorResponse(c, err, "No connect account was found, please start by creating one through the connect flow")
 		return
 	}
 
 	link, err := sc.ss.CreateConnectAccountLink(user.StripeAccountId)
 	if err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "Unable to create an onboarding link, please try again later")
 		return
 	}
 

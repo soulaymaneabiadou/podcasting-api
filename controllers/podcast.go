@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"errors"
 	"log"
 	"strconv"
 	"strings"
@@ -33,7 +32,7 @@ func (pc *PodcastsController) GetPodcasts(c *gin.Context) {
 
 	if err != nil {
 		log.Println(err.Error())
-		utils.ErrorsResponse(c, errors.New("an error occured while getting podcasts, please try again later"))
+		utils.ErrorResponse(c, err, "An error has occured while getting all podcasts, please try again later")
 		return
 	}
 
@@ -97,7 +96,7 @@ func (pc *PodcastsController) CreatePodcast(c *gin.Context) {
 
 	podcast, err := pc.ps.CreatePodcast(data)
 	if err != nil {
-		utils.ErrorResponse(c, err, "Please provide valid information in order to create your podcast")
+		utils.ErrorResponse(c, err, "Please provide valid information in order to create this podcast")
 		return
 	}
 
@@ -110,13 +109,13 @@ func (pc *PodcastsController) UpdatePodcast(c *gin.Context) {
 
 	var data types.UpdatePodcastInput
 	if err := c.ShouldBindJSON(&data); err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "Please provide valid data to be able to update this podcast")
 		return
 	}
 
 	podcast, err := pc.ps.UpdatePodcast(uid, id, data)
 	if err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "Please provide valid information to be able to update this podcast")
 		return
 	}
 
@@ -140,9 +139,15 @@ func (pc *PodcastsController) Subscribe(c *gin.Context) {
 	pid := c.Param("pid")
 	uid, _ := utils.GetCtxUser(c)
 
+	_, err := pc.ps.GetPodcastById(pid)
+	if err != nil {
+		utils.ErrorResponse(c, err, "The podcast you are trying to subscribe to does not exist")
+		return
+	}
+
 	url, err := pc.ps.Subscribe(uid, pid)
 	if err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "Unable to subscribe to this podcast, please try again later with valid information")
 		return
 	}
 

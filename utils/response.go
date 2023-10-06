@@ -45,8 +45,8 @@ func createPagination(i PaginationInput) Pagination {
 	}
 }
 
-func PaginatedResponse(c *gin.Context, data interface{}, i PaginationInput) {
-	pagination := createPagination(i)
+func PaginatedResponse(c *gin.Context, data interface{}, p PaginationInput) {
+	pagination := createPagination(p)
 	res := response{
 		Message:    "",
 		Success:    true,
@@ -81,7 +81,7 @@ func SendTokensResponse(c *gin.Context, user types.User) {
 	accessToken, refreshToken, err := CreateTokens("", JwtPayload{ID: user.ID})
 	if err != nil {
 		log.Println(err)
-		ErrorsResponse(c, err)
+		ErrorResponse(c, err, "Cannot create authentication tokens, please try sign in again later")
 		return
 	}
 
@@ -145,17 +145,6 @@ func ForbiddenResponse(c *gin.Context, msg string) {
 
 	c.JSON(http.StatusForbidden, res)
 	c.Abort()
-}
-
-func ErrorsResponse(c *gin.Context, err error) {
-	res := response{
-		Message: "Invalid data",
-		Success: false,
-		Data:    nil,
-		Errors:  parseError(err),
-	}
-
-	c.JSON(http.StatusBadRequest, res)
 }
 
 func MessageResponse(c *gin.Context, msg string) {

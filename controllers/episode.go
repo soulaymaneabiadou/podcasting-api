@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -32,7 +31,7 @@ func (pc *EpisodesController) GetPodcastEpisodes(c *gin.Context) {
 
 	if err != nil {
 		log.Println(err.Error())
-		utils.ErrorsResponse(c, errors.New("an error occured while getting podcast episodes, please try again later"))
+		utils.ErrorResponse(c, err, "An error has occured while getting this podcast's episodes, please try again later")
 		return
 	}
 
@@ -49,7 +48,7 @@ func (pc *EpisodesController) GetPodcastEpisodesBySlug(c *gin.Context) {
 
 	if err != nil {
 		log.Println(err.Error())
-		utils.ErrorsResponse(c, errors.New("an error occured while getting podcast episodes, please try again later"))
+		utils.ErrorResponse(c, err, "An error has occured while getting this podcast's episodes, please try again later")
 		return
 	}
 
@@ -74,12 +73,12 @@ func (pc *EpisodesController) GetPodcastEpisode(c *gin.Context) {
 	uid, _ := utils.GetCtxUser(c)
 	subscribed, err := pc.us.IsUserSubscribedToPodcast(uid, fmt.Sprint(episode.PodcastId))
 	if err != nil {
-		utils.ErrorsResponse(c, errors.New("an error occured while checking for eligibility, please try again later"))
+		utils.ErrorResponse(c, err, "An error has occured while checking for eligibility, please try again later")
 		return
 	}
 
 	if !subscribed {
-		utils.ErrorsResponse(c, errors.New("you haven't subscribed to this episode's podcast yet."))
+		utils.ErrorResponse(c, err, "you haven't subscribed to this episode's podcast yet.")
 		return
 	}
 
@@ -101,7 +100,7 @@ func (pc *EpisodesController) GetPodcastEpisodeBySlug(c *gin.Context) {
 func (pc *EpisodesController) CreatePodcastEpisode(c *gin.Context) {
 	var data types.CreateEpisodeInput
 	if err := c.ShouldBindJSON(&data); err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "Please provide valid data to create this episode")
 		return
 	}
 
@@ -113,7 +112,7 @@ func (pc *EpisodesController) CreatePodcastEpisode(c *gin.Context) {
 
 	episode, err := pc.es.CreatePodcastEpisode(data)
 	if err != nil {
-		utils.ErrorsResponse(c, err) // errors.New("invalid input supplied")
+		utils.ErrorResponse(c, err, "Please provide valid information to create this episode")
 		return
 	}
 
@@ -126,13 +125,13 @@ func (pc *EpisodesController) UpdatePodcastEpisode(c *gin.Context) {
 
 	var data types.UpdateEpisodeInput
 	if err := c.ShouldBindJSON(&data); err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "Please provide valid data to update this episode")
 		return
 	}
 
 	episode, err := pc.es.UpdatePodcastEpisode(uid, id, data)
 	if err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "Please provide valid information to update this episode")
 		return
 	}
 
@@ -145,13 +144,13 @@ func (pc *EpisodesController) PublishPodcastEpisode(c *gin.Context) {
 
 	var data types.PublishEpisodeInput
 	if err := c.ShouldBindJSON(&data); err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "Unable to publish this episode, please check the provided data")
 		return
 	}
 
 	episode, err := pc.es.PublishPodcastEpisode(uid, id, data)
 	if err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "Please provide valid information to be able to publish this episode")
 		return
 	}
 
@@ -165,7 +164,7 @@ func (pc *EpisodesController) DeletePodcastEpisode(c *gin.Context) {
 	res, err := pc.es.DeletePodcastEpisode(uid, id)
 
 	if err != nil && res == true {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "You cannot a non draft episode, please unlist it and try again")
 		return
 	}
 

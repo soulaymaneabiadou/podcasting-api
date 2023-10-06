@@ -73,7 +73,7 @@ func (ac *AuthController) CurrentUser(c *gin.Context) {
 
 	user, err := ac.as.GetUser(id)
 	if err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "Unauthorized access")
 		return
 	}
 
@@ -85,13 +85,13 @@ func (ac *AuthController) UpdateDetails(c *gin.Context) {
 
 	var data types.UpdateDetailsInput
 	if err := c.ShouldBindJSON(&data); err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "Please provide valid data to update your profile details")
 		return
 	}
 
 	user, err := ac.as.UpdateDetails(id, data)
 	if err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "Unable to update your profile details, please check the data you provided and retry later")
 		return
 	}
 
