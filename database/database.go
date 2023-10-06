@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"podcast/models"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -39,45 +38,6 @@ func Connect() {
 	}
 
 	log.Println("connected successfully to the database")
-}
-
-func Migrate() {
-	db.Exec(`CREATE TYPE Role AS ENUM (
-		'listener',
-		'creator'
-	);`)
-
-	db.Exec(`CREATE TYPE Visibility AS ENUM (
-		'draft',
-		'public',
-		'protected',
-		'archived'
-	);`)
-
-	db.Exec(`CREATE TYPE SubscriptionStatus AS ENUM (
-		'incomplete',
-		'incomplete_expired',
-		'trialing',
-		'active',
-		'past_due',
-		'canceled',
-		'unpaid'
-	);`)
-
-	err := db.AutoMigrate(
-		&models.User{},
-		&models.Podcast{},
-		&models.Episode{},
-		&models.Subscription{},
-	)
-
-	db.Exec(`CREATE UNIQUE INDEX unique_user_podcast ON subscriptions (user_id, podcast_id);`)
-
-	if err != nil {
-		log.Fatal("failed to migrate all database tables", err)
-	}
-
-	log.Println("migrated all database tables successfully")
 }
 
 func Paginate(p Paginator) *gorm.DB {
