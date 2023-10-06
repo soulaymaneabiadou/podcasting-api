@@ -34,6 +34,6 @@ func (o StringSlice) Value() (driver.Value, error) {
 }
 
 type SocialLinks struct {
-	Instagram string
-	Twitter   string
+	Instagram string `json:"instagram"`
+	Twitter   string `json:"twitter"`
 }
