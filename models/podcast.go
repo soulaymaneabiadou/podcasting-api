@@ -15,7 +15,7 @@ type Podcast struct {
 	SocialLinks SocialLinks `json:"social_links" gorm:"type:JSON"`
 	Hosts       StringSlice `json:"hosts" gorm:"type:varchar(255)"`
 	Tags        StringSlice `json:"tags" gorm:"type:varchar(255)"`
-	CreatorId   uint        `json:"creator_id" gorm:"type:varchar(255);not null;index"`
+	CreatorId   uint        `json:"creator_id" gorm:"type:varchar(255);not null;unique"`
 
 	Creator       User           `json:"creator" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	Episodes      []Episode      `json:"episodes"`

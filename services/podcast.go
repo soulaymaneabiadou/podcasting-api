@@ -56,7 +56,12 @@ func (ps *PodcastsService) GetPodcastBySlug(slug string) (types.Podcast, error) 
 }
 
 func (ps *PodcastsService) CreatePodcast(d types.CreatePodcastInput) (types.Podcast, error) {
-	return ps.pr.Create(d)
+	podcast, err := ps.pr.Create(d)
+	if err != nil {
+		return types.Podcast{}, errors.New("you cannot create more than one podcast")
+	}
+
+	return podcast, nil
 }
 
 func (ps *PodcastsService) UpdatePodcast(uid string, id string, i types.UpdatePodcastInput) (types.Podcast, error) {

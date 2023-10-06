@@ -97,7 +97,7 @@ func (pc *PodcastsController) CreatePodcast(c *gin.Context) {
 
 	podcast, err := pc.ps.CreatePodcast(data)
 	if err != nil {
-		utils.ErrorsResponse(c, err)
+		utils.ErrorResponse(c, err, "Please provide valid information in order to create your podcast")
 		return
 	}
 
