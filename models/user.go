@@ -26,13 +26,13 @@ type User struct {
 	VerificationToken   string    `json:"-" gorm:"type:varchar(255);default:NULL;"`
 	Verified            bool      `json:"-" gorm:"default:false"`
 	VerifiedAt          time.Time `json:"-"`
-	SigninCount         int64     `json:"-" gorm:"default:0;not null"`
+	SigninCount         uint      `json:"-" gorm:"default:0;not null"`
 	CurrentSigninAt     time.Time `json:"-"`
 	CurrentSigninIP     string    `json:"-"`
 	LastSigninAt        time.Time `json:"-"`
 	LastSigninIP        string    `json:"-"`
 
-	Subscriptions      []Subscription `json:"-"`
+	Subscriptions      []Subscription `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	SubscribedPodcasts []Podcast      `json:"subscribed_podcasts" gorm:"many2many:subscriptions"`
 }
 

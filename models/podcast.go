@@ -15,11 +15,11 @@ type Podcast struct {
 	SocialLinks SocialLinks `json:"social_links" gorm:"embedded"`
 	Hosts       StringSlice `json:"hosts" gorm:"type:varchar(255)"`
 	Tags        StringSlice `json:"tags" gorm:"type:varchar(255)"`
-	CreatorId   uint        `json:"creator_id" gorm:"type:varchar(255);not null;unique"`
+	CreatorId   uint        `json:"creator_id" gorm:"not null;unique"`
 
 	Creator       User           `json:"creator" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	Episodes      []Episode      `json:"episodes"`
-	Subscriptions []Subscription `json:"-"`
+	Episodes      []Episode      `json:"episodes" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Subscriptions []Subscription `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	Subscribers   []User         `json:"-" gorm:"many2many:subscriptions"`
 }
 
