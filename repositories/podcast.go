@@ -112,3 +112,14 @@ func (ur *PodcastsRepository) Destroy(podcast types.Podcast) (bool, error) {
 
 	return true, nil
 }
+
+func (ur *PodcastsRepository) GetByCreatorId(id string) (types.Podcast, error) {
+	var podcast types.Podcast
+
+	if err := ur.db.Where("creator_id=?", id).First(&podcast).Error; err != nil {
+		log.Println(err.Error())
+		return types.Podcast{}, errors.New("podcast not found")
+	}
+
+	return podcast, nil
+}

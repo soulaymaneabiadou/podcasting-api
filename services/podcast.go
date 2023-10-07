@@ -150,3 +150,12 @@ func (ps *PodcastsService) Subscribe(uid, pid string) (string, error) {
 
 	return url, nil
 }
+
+func (ps *PodcastsService) GetPodcastByCreatorId(id string) (types.Podcast, error) {
+	podcast, err := ps.pr.GetByCreatorId(id)
+	if err != nil {
+		return podcast, err
+	}
+
+	return podcast, nil
+}

@@ -108,9 +108,32 @@ func (pc *PodcastsController) UpdatePodcast(c *gin.Context) {
 	uid, _ := utils.GetCtxUser(c)
 
 	var data types.UpdatePodcastInput
-	if err := c.ShouldBindJSON(&data); err != nil {
-		utils.ErrorResponse(c, err, "Please provide valid data to be able to update this podcast")
-		return
+	var picturePath string
+
+	picture, err := c.FormFile("picture")
+	if err != nil {
+		log.Println("no picture was uploaded")
+	}
+
+	if picture != nil {
+		// TODO: delete old picture if new one got uploaded
+		picturePath, err = pc.fh.Upload(picture)
+		if err != nil {
+			utils.ErrorResponse(c, err, "An error occured while uploading the provided picture, please try again later")
+			return
+		}
+	}
+
+	var socials types.SocialLinks
+	json.Unmarshal([]byte(c.PostForm("social_links")), &socials)
+
+	data = types.UpdatePodcastInput{
+		Headline:    c.PostForm("headline"),
+		Description: c.PostForm("description"),
+		Hosts:       strings.Split(c.PostForm("hosts"), ", "),
+		Tags:        strings.Split(c.PostForm("tags"), ", "),
+		Picture:     picturePath,
+		SocialLinks: socials,
 	}
 
 	podcast, err := pc.ps.UpdatePodcast(uid, id, data)
@@ -154,4 +177,16 @@ func (pc *PodcastsController) Subscribe(c *gin.Context) {
 	// TODO: enable
 	// c.Redirect(http.StatusTemporaryRedirect, url)
 	utils.SuccessResponse(c, url)
+}
+
+func (pc *PodcastsController) GetPodcastByCreator(c *gin.Context) {
+	cid := c.Param("cid")
+
+	podcast, err := pc.ps.GetPodcastByCreatorId(cid)
+	if err != nil {
+		utils.NotFoundResponse(c)
+		return
+	}
+
+	utils.SuccessResponse(c, podcast)
 }
