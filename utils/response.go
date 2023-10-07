@@ -35,14 +35,27 @@ type response struct {
 }
 
 func createPagination(i PaginationInput) Pagination {
-	total := float64(i.Count) / float64(i.Page*i.Limit)
-	return Pagination{
+	totalPages := math.Ceil(float64(i.Count) / float64(i.Limit))
+
+	prevPage := i.Page - 1
+	if prevPage < 0 {
+		prevPage = 0
+	}
+
+	nextPage := i.Page + 1
+	if nextPage > int(totalPages) {
+		nextPage = 0
+	}
+
+	p := Pagination{
 		Page:       i.Page,
 		Limit:      i.Limit,
-		PrevPage:   i.Page - 1,
-		NextPage:   i.Page + 1,
-		TotalPages: math.Ceil(total),
+		PrevPage:   prevPage,
+		NextPage:   nextPage,
+		TotalPages: totalPages,
 	}
+
+	return p
 }
 
 func PaginatedResponse(c *gin.Context, data interface{}, p PaginationInput) {
