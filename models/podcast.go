@@ -17,8 +17,8 @@ type Podcast struct {
 	Tags        StringSlice `json:"tags" gorm:"type:varchar(255)"`
 	CreatorId   uint        `json:"creator_id" gorm:"not null;unique"`
 
-	Creator       User           `json:"creator" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	Episodes      []Episode      `json:"episodes" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Creator       *User          `json:"creator,omitempty" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Episodes      []Episode      `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	Subscriptions []Subscription `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	Subscribers   []User         `json:"-" gorm:"many2many:subscriptions"`
 }
