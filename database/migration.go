@@ -65,8 +65,6 @@ func Migrate() {
 }
 
 func Drop() {
-	dropTypes()
-
 	err := db.Migrator().DropTable(
 		&models.User{},
 		&models.Podcast{},
@@ -76,6 +74,8 @@ func Drop() {
 	if err != nil {
 		log.Fatal("failed to drop all database tables, ", err)
 	}
+
+	dropTypes()
 
 	log.Println("dropped all database tables successfully")
 }
