@@ -92,6 +92,10 @@ func (es *EpisodesService) CreatePodcastEpisode(d types.CreateEpisodeInput) (typ
 		}
 	}
 
+	if !d.PublishedAt.IsZero() && d.PublishedAt.Before(time.Now()) {
+		return types.Episode{}, errors.New("please set a publishing date in the future.")
+	}
+
 	episode, err := es.er.Create(d)
 	if err != nil {
 		return types.Episode{}, err
@@ -118,6 +122,10 @@ func (es *EpisodesService) UpdatePodcastEpisode(uid, id string, i types.UpdateEp
 
 	if podcast.CreatorId != episode.CreatorId {
 		return episode, errors.New("unauthorized creator, cannot update")
+	}
+
+	if !i.PublishedAt.IsZero() && i.PublishedAt.Before(time.Now()) {
+		return types.Episode{}, errors.New("please set a publishing date in the future.")
 	}
 
 	episode, err = es.er.Update(episode, i)

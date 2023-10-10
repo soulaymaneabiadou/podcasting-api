@@ -13,7 +13,7 @@ type CreateEpisodeInput struct {
 	MediaLink   string             `json:"media_link" binding:"omitempty"`
 	Visibility  string             `json:"visibility" binding:"omitempty"`
 	Tags        models.StringSlice `json:"tags" binding:"omitempty"`
-	PublishedAt time.Time          `json:"published_at" binding:"omitempty"`
+	PublishedAt time.Time          `json:"published_at,omitempty" binding:"omitempty"`
 	CreatorId   uint               `json:"-" binding:"-"`
 	PodcastId   uint               `json:"-" binding:"-"`
 }
