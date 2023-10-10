@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -78,7 +79,7 @@ func (pc *EpisodesController) GetPodcastEpisode(c *gin.Context) {
 	}
 
 	if !subscribed {
-		utils.ErrorResponse(c, err, "you haven't subscribed to this episode's podcast yet.")
+		utils.ErrorResponse(c, errors.New("missing subscription"), "You haven't subscribed to this episode's podcast yet.")
 		return
 	}
 

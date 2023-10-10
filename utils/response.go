@@ -13,11 +13,11 @@ import (
 )
 
 type Pagination struct {
-	PrevPage   int     `json:"prev_page"`
-	NextPage   int     `json:"next_page"`
-	TotalPages float64 `json:"total_pages"`
-	Page       int     `json:"page"`
-	Limit      int     `json:"limit"`
+	PrevPage   int     `json:"prev_page,omitempty"`
+	NextPage   int     `json:"next_page,omitempty"`
+	TotalPages float64 `json:"total_pages,omitempty"`
+	Page       int     `json:"page,omitempty"`
+	Limit      int     `json:"limit,omitempty"`
 }
 
 type PaginationInput struct {
@@ -31,7 +31,7 @@ type response struct {
 	Success    bool        `json:"success"`
 	Data       interface{} `json:"data"`
 	Errors     interface{} `json:"errors"`
-	Pagination Pagination  `json:"pagination"`
+	Pagination Pagination  `json:"pagination,omitempty"`
 }
 
 func createPagination(i PaginationInput) Pagination {
