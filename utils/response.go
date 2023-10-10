@@ -181,3 +181,14 @@ func ErrorResponse(c *gin.Context, err error, msg string) {
 
 	c.JSON(http.StatusBadRequest, res)
 }
+
+func InternalServerError(c *gin.Context) {
+	res := response{
+		Message: "Internal Server Error",
+		Success: false,
+		Data:    nil,
+		Errors:  nil,
+	}
+
+	c.JSON(http.StatusInternalServerError, res)
+}
