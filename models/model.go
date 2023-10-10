@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql/driver"
+	"encoding/json"
 	"strings"
 	"time"
 
@@ -36,4 +37,17 @@ func (o StringSlice) Value() (driver.Value, error) {
 type SocialLinks struct {
 	Instagram string `json:"instagram"`
 	Twitter   string `json:"twitter"`
+}
+
+func (o *SocialLinks) Scan(value interface{}) error {
+	bytes := value.([]byte)
+	result := SocialLinks{}
+	err := json.Unmarshal(bytes, &result)
+	*o = SocialLinks(result)
+
+	return err
+}
+
+func (o SocialLinks) Value() (driver.Value, error) {
+	return json.Marshal(o)
 }

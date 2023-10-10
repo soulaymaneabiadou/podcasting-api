@@ -12,7 +12,7 @@ type Podcast struct {
 	Slug        string      `json:"slug" gorm:"type:varchar(255);not null;unique"`
 	Description string      `json:"description" gorm:"type:text;not null"`
 	Picture     string      `json:"picture" gorm:"type:varchar(255)"`
-	SocialLinks SocialLinks `json:"social_links" gorm:"embedded"`
+	SocialLinks SocialLinks `json:"social_links" gorm:"type:JSON"`
 	Hosts       StringSlice `json:"hosts" gorm:"type:varchar(255)"`
 	Tags        StringSlice `json:"tags" gorm:"type:varchar(255)"`
 	CreatorId   uint        `json:"creator_id" gorm:"not null;unique"`
