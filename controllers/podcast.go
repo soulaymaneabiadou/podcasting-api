@@ -60,7 +60,18 @@ func (pc *PodcastsController) GetPodcastBySlug(c *gin.Context) {
 		return
 	}
 
-	utils.SuccessResponse(c, podcast)
+	stats, err := pc.ps.GetStats(podcast.ID)
+	if err != nil {
+		utils.InternalServerError(c)
+		return
+	}
+
+	utils.SuccessResponse(c, gin.H{
+		"podcast": podcast,
+		"stats": types.PodcastStats{
+			EpisodesCount: stats.EpisodesCount,
+		},
+	})
 }
 
 func (pc *PodcastsController) CreatePodcast(c *gin.Context) {

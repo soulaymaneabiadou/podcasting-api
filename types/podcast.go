@@ -29,7 +29,7 @@ type UpdatePodcastInput struct {
 }
 
 type PodcastStats struct {
-	TotalSubsCount  int64 `json:"total_subscriptions_count"`
-	ActiveSubsCount int64 `json:"active_subscriptions_count"`
-	EpisodesCount   int64 `json:"episodes_count"`
+	TotalSubsCount  int64 `json:"total_subscriptions_count,omitempty"`
+	ActiveSubsCount int64 `json:"active_subscriptions_count,omitempty"`
+	EpisodesCount   int64 `json:"episodes_count,omitempty"`
 }
