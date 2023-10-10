@@ -27,3 +27,9 @@ type UpdatePodcastInput struct {
 	Hosts       StringSlice `form:"hosts" json:"hosts" binding:"omitempty"`
 	Tags        StringSlice `form:"tags" json:"tags" binding:"omitempty"`
 }
+
+type PodcastStats struct {
+	TotalSubsCount  int64 `json:"total_subscriptions_count"`
+	ActiveSubsCount int64 `json:"active_subscriptions_count"`
+	EpisodesCount   int64 `json:"episodes_count"`
+}

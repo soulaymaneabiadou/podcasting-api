@@ -159,3 +159,34 @@ func (ps *PodcastsService) GetPodcastByCreatorId(id string) (types.Podcast, erro
 
 	return podcast, nil
 }
+
+func (ps *PodcastsService) GetStats(id uint) (types.PodcastStats, error) {
+	pid := fmt.Sprintf("%d", id)
+
+	episodesCount, err := ps.pr.GetEpisodesCount(pid)
+	if err != nil {
+		return types.PodcastStats{}, err
+	}
+
+	activeSubCount, err := ps.pr.GetActiveSubscriptionsCount(pid)
+	if err != nil {
+		return types.PodcastStats{}, err
+	}
+
+	subCount, err := ps.pr.GetSubscriptionsCount(pid)
+	if err != nil {
+		return types.PodcastStats{}, err
+	}
+
+	// TODO:
+	// stripe stats
+
+	// construct stats
+	stats := types.PodcastStats{
+		TotalSubsCount:  subCount,
+		ActiveSubsCount: activeSubCount,
+		EpisodesCount:   episodesCount,
+	}
+
+	return stats, nil
+}

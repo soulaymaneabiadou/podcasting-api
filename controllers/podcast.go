@@ -189,5 +189,11 @@ func (pc *PodcastsController) GetPodcastByCreator(c *gin.Context) {
 		return
 	}
 
-	utils.SuccessResponse(c, podcast)
+	stats, err := pc.ps.GetStats(podcast.ID)
+	if err != nil {
+		utils.InternalServerError(c)
+		return
+	}
+
+	utils.SuccessResponse(c, gin.H{"podcast": podcast, "stats": stats})
 }

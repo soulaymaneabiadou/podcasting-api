@@ -123,3 +123,53 @@ func (ur *PodcastsRepository) GetByCreatorId(id string) (types.Podcast, error) {
 
 	return podcast, nil
 }
+
+func (pr *PodcastsRepository) GetSubscriptions(pid string) ([]types.Subscription, error) {
+	var subscriptions []types.Subscription
+
+	if err := pr.db.Where("podcast_id=?", pid).Find(&subscriptions).Error; err != nil {
+		return []types.Subscription{}, err
+	}
+
+	return subscriptions, nil
+}
+
+func (pr *PodcastsRepository) GetSubscriptionsCount(pid string) (int64, error) {
+	var count int64
+
+	if err := pr.db.Model(&types.Subscription{}).Where("podcast_id=?", pid).Count(&count).Error; err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
+func (pr *PodcastsRepository) GetActiveSubscriptionsCount(pid string) (int64, error) {
+	var count int64
+
+	if err := pr.db.Model(&types.Subscription{}).Where("status=?", "active").Where("podcast_id=?", pid).Count(&count).Error; err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
+func (pr *PodcastsRepository) GetEpisodes(pid string) ([]types.Episode, error) {
+	var episodes []types.Episode
+
+	if err := pr.db.Where("podcast_id=?", pid).Find(&episodes).Error; err != nil {
+		return []types.Episode{}, err
+	}
+
+	return episodes, nil
+}
+
+func (pr *PodcastsRepository) GetEpisodesCount(pid string) (int64, error) {
+	var count int64
+
+	if err := pr.db.Model(&types.Episode{}).Where("podcast_id=?", pid).Count(&count).Error; err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
