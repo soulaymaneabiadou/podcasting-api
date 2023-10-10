@@ -11,11 +11,11 @@ type Podcast struct {
 	Headline    string      `json:"headline" gorm:"type:varchar(255);not null"`
 	Slug        string      `json:"slug" gorm:"type:varchar(255);not null;unique"`
 	Description string      `json:"description" gorm:"type:text;not null"`
-	Picture     string      `json:"picture" gorm:"type:varchar(255)"`
-	SocialLinks SocialLinks `json:"social_links" gorm:"type:JSON"`
-	Hosts       StringSlice `json:"hosts" gorm:"type:varchar(255)"`
-	Tags        StringSlice `json:"tags" gorm:"type:varchar(255)"`
-	CreatorId   uint        `json:"creator_id" gorm:"not null;unique"`
+	Picture     string      `json:"picture,omitempty" gorm:"type:varchar(255)"`
+	SocialLinks SocialLinks `json:"social_links,omitempty" gorm:"type:JSON"`
+	Hosts       StringSlice `json:"hosts" gorm:"type:varchar(255);not null"`
+	Tags        StringSlice `json:"tags,omitempty" gorm:"type:varchar(255)"`
+	CreatorId   uint        `json:"-" gorm:"not null;unique"`
 
 	Creator       *User          `json:"creator,omitempty" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	Episodes      []Episode      `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`

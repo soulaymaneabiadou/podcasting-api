@@ -18,11 +18,11 @@ type User struct {
 	ResetPasswordToken  string    `json:"-" gorm:"type:varchar(255);default:NULL;"`
 	ResetPasswordExpire time.Time `json:"-"`
 	Role                string    `json:"role" gorm:"type:role;default:'listener'" sql:"type:Role"`
-	StripeCustomerId    string    `json:"stripe_customer_id" gorm:"type:varchar(255);default:NULL;unique"`
-	StripeAccountId     string    `json:"stripe_account_id" gorm:"type:varchar(255);default:NULL;unique"`
-	ChargesEnabled      bool      `json:"charges_enabled" gorm:"default:false"`
-	TransfersEnabled    bool      `json:"transfers_enabled" gorm:"default:false"`
-	DetailsSubmitted    bool      `json:"details_submitted" gorm:"default:false"`
+	StripeCustomerId    string    `json:"stripe_customer_id,omitempty" gorm:"type:varchar(255);default:NULL;unique"`
+	StripeAccountId     string    `json:"stripe_account_id,omitempty" gorm:"type:varchar(255);default:NULL;unique"`
+	ChargesEnabled      bool      `json:"charges_enabled,omitempty" gorm:"default:false"`
+	TransfersEnabled    bool      `json:"transfers_enabled,omitempty" gorm:"default:false"`
+	DetailsSubmitted    bool      `json:"details_submitted,omitempty" gorm:"default:false"`
 	VerificationToken   string    `json:"-" gorm:"type:varchar(255);default:NULL;"`
 	Verified            bool      `json:"-" gorm:"default:false"`
 	VerifiedAt          time.Time `json:"-"`
@@ -33,7 +33,7 @@ type User struct {
 	LastSigninIP        string    `json:"-"`
 
 	Subscriptions      []Subscription `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	SubscribedPodcasts []Podcast      `json:"subscribed_podcasts" gorm:"many2many:subscriptions"`
+	SubscribedPodcasts []Podcast      `json:"-" gorm:"many2many:subscriptions"`
 }
 
 func (u *User) BeforeSave(db *gorm.DB) error {

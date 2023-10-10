@@ -14,10 +14,10 @@ type Episode struct {
 	Description string      `json:"description" gorm:"type:varchar(255);not null;unique"`
 	MediaLink   string      `json:"media_link" gorm:"type:varchar(255)"`
 	Visibility  string      `json:"visibility" gorm:"type:visibility;default:'draft'" sql:"type:Visibility"`
-	Tags        StringSlice `json:"tags" gorm:"type:varchar(255)"`
-	PublishedAt time.Time   `json:"published_at" gorm:"default:null"`
-	CreatorId   uint        `json:"creator_id" gorm:"not null;index"`
-	PodcastId   uint        `json:"podcast_id" gorm:"not null;index"`
+	Tags        StringSlice `json:"tags,omitempty" gorm:"type:varchar(255)"`
+	PublishedAt time.Time   `json:"published_at,omitempty" gorm:"default:null"`
+	CreatorId   uint        `json:"-" gorm:"not null;index"`
+	PodcastId   uint        `json:"-" gorm:"not null;index"`
 
 	Creator User    `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	Podcast Podcast `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
