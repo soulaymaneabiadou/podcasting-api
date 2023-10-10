@@ -64,11 +64,12 @@ func (pc *PodcastsController) GetPodcastBySlug(c *gin.Context) {
 }
 
 func (pc *PodcastsController) CreatePodcast(c *gin.Context) {
+	c.Request.Body = utils.LimitRequestSize(c, 6)
 	var data types.CreatePodcastInput
 
-	picture, err := c.FormFile("picture")
+	picture, err := utils.HandleFileValidation(c, "picture", []string{"jpg", "png"}, 5)
 	if err != nil {
-		utils.ErrorResponse(c, err, "Please include a picture in a proper format")
+		utils.ErrorResponse(c, err, "Please include a picture of type png or jpg, that does not exceed 5MB")
 		return
 	}
 
