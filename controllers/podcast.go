@@ -119,10 +119,16 @@ func (pc *PodcastsController) UpdatePodcast(c *gin.Context) {
 	id := c.Param("pid")
 	uid, _ := utils.GetCtxUser(c)
 
+	creatorId, err := strconv.ParseUint(id, 0, 32)
+	if err != nil || !utils.IsOwner(c, uint(creatorId)) {
+		utils.NotFoundResponse(c)
+		return
+	}
+
 	var data types.UpdatePodcastInput
 	var picturePath string
 
-	picture, err := c.FormFile("picture")
+	picture, err := utils.HandleFileValidation(c, "picture", []string{"jpg", "png"}, 5)
 	if err != nil {
 		log.Println("no picture was uploaded")
 	}
