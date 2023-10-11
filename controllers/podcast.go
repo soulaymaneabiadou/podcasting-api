@@ -43,7 +43,7 @@ func (pc *PodcastsController) GetPodcast(c *gin.Context) {
 	id := c.Param("pid")
 
 	podcast, err := pc.ps.GetPodcastById(id)
-	if err != nil {
+	if err != nil || !utils.IsOwner(c, podcast.CreatorId) {
 		utils.NotFoundResponse(c)
 		return
 	}

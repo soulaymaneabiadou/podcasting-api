@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -18,4 +19,9 @@ func GetCtxUser(c *gin.Context) (string, JwtPayload) {
 // Limit the request size in MB
 func LimitRequestSize(c *gin.Context, maxMb int64) io.ReadCloser {
 	return http.MaxBytesReader(c.Writer, c.Request.Body, int64(maxMb<<20))
+}
+
+func IsOwner(c *gin.Context, ownerId uint) bool {
+	id, _ := GetCtxUser(c)
+	return fmt.Sprint(ownerId) == id
 }
