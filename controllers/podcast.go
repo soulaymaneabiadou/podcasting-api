@@ -192,9 +192,9 @@ func (pc *PodcastsController) Subscribe(c *gin.Context) {
 }
 
 func (pc *PodcastsController) GetPodcastByCreator(c *gin.Context) {
-	cid := c.Param("cid")
+	id := c.Param("id")
 
-	podcast, err := pc.ps.GetPodcastByCreatorId(cid)
+	podcast, err := pc.ps.GetPodcastByCreatorId(id)
 	if err != nil {
 		utils.NotFoundResponse(c)
 		return
@@ -207,4 +207,16 @@ func (pc *PodcastsController) GetPodcastByCreator(c *gin.Context) {
 	}
 
 	utils.SuccessResponse(c, gin.H{"podcast": podcast, "stats": stats})
+}
+
+func (pc *PodcastsController) GetListenerSubscribedPodcasts(c *gin.Context) {
+	id := c.Param("id")
+
+	podcasts, err := pc.ps.GetListenerSubscribedPodcasts(id)
+	if err != nil {
+		utils.NotFoundResponse(c)
+		return
+	}
+
+	utils.SuccessResponse(c, gin.H{"podcasts": podcasts})
 }

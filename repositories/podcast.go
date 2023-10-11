@@ -173,3 +173,23 @@ func (pr *PodcastsRepository) GetEpisodesCount(pid string) (int64, error) {
 
 	return count, nil
 }
+
+func (pr *PodcastsRepository) GetByListenerId(id string) ([]types.Podcast, error) {
+	var subscriptions []types.Subscription
+	var podcasts []types.Podcast = []types.Podcast{}
+
+	if err := pr.db.Where("user_id=?", id).Find(&subscriptions).Error; err != nil {
+		return podcasts, err
+	}
+
+	for _, sub := range subscriptions {
+		podcast := types.Podcast{}
+		if err := pr.db.First(&podcast, sub.PodcastId).Error; err != nil {
+			return podcasts, err
+		}
+
+		podcasts = append(podcasts, podcast)
+	}
+
+	return podcasts, nil
+}

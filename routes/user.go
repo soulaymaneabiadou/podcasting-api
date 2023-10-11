@@ -12,7 +12,14 @@ func usersRoutes(r *gin.RouterGroup) {
 	pc := CreatePodcastsController()
 
 	g.Use(middleware.Authenticate())
-	g.Use(middleware.Authorize([]types.Role{types.CREATOR_ROLE}))
-	g.GET("/:cid/podcast", pc.GetPodcastByCreator)
 
+	// creator group
+	cg := g.Group("/")
+	cg.Use(middleware.Authorize([]types.Role{types.CREATOR_ROLE}))
+	cg.GET("/:id/podcast", pc.GetPodcastByCreator)
+
+	// listener group
+	lg := g.Group("/")
+	lg.Use(middleware.Authorize([]types.Role{types.LISTENER_ROLE}))
+	lg.GET("/:id/subscribed-podcasts", pc.GetListenerSubscribedPodcasts)
 }

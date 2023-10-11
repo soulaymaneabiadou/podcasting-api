@@ -190,3 +190,12 @@ func (ps *PodcastsService) GetStats(id uint) (types.PodcastStats, error) {
 
 	return stats, nil
 }
+
+func (ps *PodcastsService) GetListenerSubscribedPodcasts(id string) ([]types.Podcast, error) {
+	podcasts, err := ps.pr.GetByListenerId(id)
+	if err != nil {
+		return []types.Podcast{}, err
+	}
+
+	return podcasts, nil
+}
