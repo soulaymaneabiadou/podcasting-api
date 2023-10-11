@@ -92,8 +92,8 @@ func (es *EpisodesService) CreatePodcastEpisode(d types.CreateEpisodeInput) (typ
 		}
 	}
 
-	if !d.PublishedAt.IsZero() && d.PublishedAt.Before(time.Now()) {
-		return types.Episode{}, errors.New("please set a publishing date in the future.")
+	if d.Visibility != "draft" {
+		d.PublishedAt = time.Now()
 	}
 
 	episode, err := es.er.Create(d)
@@ -124,8 +124,8 @@ func (es *EpisodesService) UpdatePodcastEpisode(uid, id string, i types.UpdateEp
 		return episode, errors.New("unauthorized creator, cannot update")
 	}
 
-	if !i.PublishedAt.IsZero() && i.PublishedAt.Before(time.Now()) {
-		return types.Episode{}, errors.New("please set a publishing date in the future.")
+	if i.Visibility != "draft" || (i.Visibility == "draft" && !i.PublishedAt.IsZero()) {
+		i.PublishedAt = time.Now()
 	}
 
 	episode, err = es.er.Update(episode, i)
@@ -154,6 +154,10 @@ func (es *EpisodesService) PublishPodcastEpisode(uid, id string, i types.Publish
 	creatorId, err := strconv.ParseUint(uid, 0, 64)
 	if err != nil || episode.CreatorId != uint(creatorId) {
 		return episode, errors.New("podcast episode not found")
+	}
+
+	if i.Visibility == "draft" {
+		return episode, errors.New("cannot set the visibility to draft")
 	}
 
 	episode, err = es.er.Update(episode, types.UpdateEpisodeInput{
