@@ -41,6 +41,7 @@ func (a *App) Serve() {
 		middleware.Compression(),
 		middleware.RequestId(),
 		middleware.HttpLogger(),
+		middleware.RateLimit(100, 1),
 	)
 
 	g := server.Group("/api").Group("/v1")
