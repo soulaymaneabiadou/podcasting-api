@@ -27,7 +27,17 @@ func (pc *PodcastsController) GetPodcasts(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
 
-	count, podcasts, err := pc.ps.GetPodcasts(types.Paginator{Limit: limit, Page: page})
+	host := c.Query("host")
+	name := c.Query("name")
+
+	sortBy := c.Query("sort_by")
+	ascending := c.DefaultQuery("ascending", "false") == "true"
+
+	filter := types.PodcastFilters{Name: name, Host: host}
+	sort := types.Sorter{Column: sortBy, Ascending: ascending}
+	paginate := types.Paginator{Limit: limit, Page: page}
+
+	count, podcasts, err := pc.ps.GetPodcasts(filter, sort, paginate)
 	pagination := utils.PaginationInput{Page: page, Limit: limit, Count: count}
 
 	if err != nil {

@@ -3,6 +3,7 @@ package repositories
 import (
 	"errors"
 	"log"
+	"strings"
 
 	"podcast/database"
 	"podcast/types"
@@ -30,10 +31,12 @@ func (ur *PodcastsRepository) Count() (int64, error) {
 	return count, nil
 }
 
-func (ur *PodcastsRepository) GetAll(p types.Paginator) ([]types.Podcast, error) {
+func (ur *PodcastsRepository) GetAll(f types.PodcastFilters, s types.Sorter, p types.Paginator) ([]types.Podcast, error) {
 	var podcasts []types.Podcast
 
-	if err := database.Paginate(p).Preload("Creator").Find(&podcasts).Error; err != nil {
+	db := filterPodcasts(ur.db, f)
+	db = database.Sort(db, s)
+	if err := database.Paginate(db, p).Preload("Creator").Find(&podcasts).Error; err != nil {
 		log.Println(err.Error())
 		return []types.Podcast{}, err
 	}
@@ -192,4 +195,19 @@ func (pr *PodcastsRepository) GetByListenerId(id string) ([]types.Podcast, error
 	}
 
 	return podcasts, nil
+}
+
+func filterPodcasts(db *gorm.DB, f types.PodcastFilters) *gorm.DB {
+	return db.Scopes(func(db *gorm.DB) *gorm.DB {
+		query := db
+
+		if f.Name != "" {
+			query = query.Where("lower(name) LIKE ?", "%"+strings.ToLower(f.Name)+"%")
+		}
+		if f.Host != "" {
+			query = query.Where("lower(hosts) LIKE ?", "%"+strings.ToLower(f.Host)+"%")
+		}
+
+		return query
+	})
 }

@@ -23,13 +23,13 @@ func NewPodcastsService(
 	return &PodcastsService{pr: pr, us: us, ss: ss}
 }
 
-func (ps *PodcastsService) GetPodcasts(p types.Paginator) (int64, []types.Podcast, error) {
+func (ps *PodcastsService) GetPodcasts(f types.PodcastFilters, s types.Sorter, p types.Paginator) (int64, []types.Podcast, error) {
 	count, err := ps.pr.Count()
 	if err != nil {
 		return 0, []types.Podcast{}, err
 	}
 
-	podcasts, err := ps.pr.GetAll(p)
+	podcasts, err := ps.pr.GetAll(f, s, p)
 	if err != nil {
 		return 0, []types.Podcast{}, err
 	}
