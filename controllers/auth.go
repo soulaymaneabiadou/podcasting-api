@@ -126,7 +126,7 @@ func (ac *AuthController) ForgotPassword(c *gin.Context) {
 
 	_, err := ac.as.ForgotPassword(data)
 	if err != nil {
-		utils.ErrorResponse(c, errors.New("email does not exist"), "The email you provided does not exist")
+		utils.ErrorResponse(c, err, err.Error())
 		return
 	}
 

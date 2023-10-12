@@ -159,13 +159,17 @@ func (as *AuthService) ForgotPassword(input types.ForgotPasswordInput) (string, 
 	user, err := as.ur.GetByEmail(input.Email)
 	if err != nil {
 		log.Println(err)
-		return "", err
+		return "", errors.New("The email you provided does not exist")
+	}
+
+	if !user.ResetPasswordExpire.IsZero() && user.ResetPasswordExpire.Before(time.Now().Add(time.Minute*10)) {
+		return "", errors.New("Already requested, please check your inbox or retry in 10 minutes")
 	}
 
 	token, err := hasher.GenerateSecureToken(20)
 	if err != nil {
 		log.Println(err)
-		return "", err
+		return "", errors.New("Cannot start the flow, please try again later")
 	}
 
 	hash := hasher.GenerateTokenHash(token)
