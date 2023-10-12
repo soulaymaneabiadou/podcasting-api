@@ -8,6 +8,9 @@ require (
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.11.88
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.40.0
 	github.com/gin-contrib/cors v1.4.0
+	github.com/gin-contrib/gzip v0.0.6
+	github.com/gin-contrib/requestid v0.0.6
+	github.com/gin-contrib/secure v0.0.1
 	github.com/google/wire v0.5.0
 	github.com/gosimple/slug v1.13.1
 	github.com/sendgrid/sendgrid-go v3.13.0+incompatible
@@ -31,6 +34,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.17.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.23.0 // indirect
 	github.com/aws/smithy-go v1.14.2 // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/gosimple/unidecode v1.0.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect

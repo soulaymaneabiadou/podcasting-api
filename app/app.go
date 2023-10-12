@@ -3,12 +3,12 @@ package app
 import (
 	"fmt"
 	"os"
+
 	"podcast/database"
 	"podcast/gateways/stripe"
+	"podcast/middleware"
 	"podcast/routes"
-	"time"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -31,17 +31,17 @@ func (a *App) Seed() {
 }
 
 func (a *App) Serve() {
-	server := gin.Default()
+	server := gin.New()
 	server.SetTrustedProxies(nil)
 
-	config := cors.Config{
-		AllowOrigins:     []string{os.Getenv("PUBLIC_URL")},
-		AllowCredentials: true,
-		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type"},
-		MaxAge:           12 * time.Hour,
-	}
-	server.Use(cors.New(config))
+	server.Use(
+		gin.Recovery(),
+		middleware.Secure(),
+		middleware.Cors(),
+		middleware.Compression(),
+		middleware.RequestId(),
+		middleware.HttpLogger(),
+	)
 
 	g := server.Group("/api").Group("/v1")
 
