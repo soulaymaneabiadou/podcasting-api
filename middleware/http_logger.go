@@ -3,7 +3,7 @@ package middleware
 import (
 	"log/slog"
 	"net/http"
-	"os"
+	"podcast/logger"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -12,7 +12,7 @@ import (
 type Logger func(string, ...any)
 
 func HttpLogger() gin.HandlerFunc {
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	logger := logger.NewLogger()
 
 	return func(c *gin.Context) {
 		start := time.Now()
