@@ -33,3 +33,8 @@ type PodcastStats struct {
 	ActiveSubsCount int64 `json:"active_subscriptions_count,omitempty"`
 	EpisodesCount   int64 `json:"episodes_count,omitempty"`
 }
+
+type PodcastFilters struct {
+	Name string
+	Host string
+}
