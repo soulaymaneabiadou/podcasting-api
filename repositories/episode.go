@@ -33,7 +33,7 @@ func (er *EpisodesRepository) Count(pid string) (int64, error) {
 func (er *EpisodesRepository) GetAll(pid string, p types.Paginator) ([]types.Episode, error) {
 	var episodes []types.Episode
 
-	if err := database.Paginate(p).Where("podcast_id=?", pid).Find(&episodes).Error; err != nil {
+	if err := database.Paginate(er.db, p).Where("podcast_id=?", pid).Find(&episodes).Error; err != nil {
 		log.Println(err.Error())
 		return []types.Episode{}, err
 	}
@@ -44,7 +44,7 @@ func (er *EpisodesRepository) GetAll(pid string, p types.Paginator) ([]types.Epi
 func (er *EpisodesRepository) GetPublishedEpisodes(pid string, p types.Paginator) ([]types.Episode, error) {
 	var episodes []types.Episode
 
-	if err := database.Paginate(p).Where("podcast_id=?", pid).Where("published_at IS NOT NULL").Find(&episodes).Error; err != nil {
+	if err := database.Paginate(er.db, p).Where("podcast_id=?", pid).Where("published_at IS NOT NULL").Find(&episodes).Error; err != nil {
 		log.Println(err.Error())
 		return []types.Episode{}, err
 	}
@@ -55,7 +55,7 @@ func (er *EpisodesRepository) GetPublishedEpisodes(pid string, p types.Paginator
 func (er *EpisodesRepository) GetPublicEpisodes(pid string, p types.Paginator) ([]types.Episode, error) {
 	var episodes []types.Episode
 
-	if err := database.Paginate(p).Where("podcast_id=?", pid).Where("published_at IS NOT NULL").Where("visibility=?", "public").Find(&episodes).Error; err != nil {
+	if err := database.Paginate(er.db, p).Where("podcast_id=?", pid).Where("published_at IS NOT NULL").Where("visibility=?", "public").Find(&episodes).Error; err != nil {
 		log.Println(err.Error())
 		return []types.Episode{}, err
 	}

@@ -23,7 +23,7 @@ func NewUsersRepository(db *gorm.DB) *UsersRepository {
 func (ur *UsersRepository) GetAll(p types.Paginator) ([]types.User, error) {
 	var users []types.User
 
-	if err := database.Paginate(p).Find(&users).Error; err != nil {
+	if err := database.Paginate(ur.db, p).Find(&users).Error; err != nil {
 		log.Println(err)
 		return []types.User{}, err
 	}
