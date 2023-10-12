@@ -14,6 +14,11 @@ type Paginator struct {
 	Page  int `json:"page"`
 }
 
+type Sorter struct {
+	Column    string
+	Ascending bool
+}
+
 var db *gorm.DB
 
 func Connection() *gorm.DB {
@@ -40,7 +45,7 @@ func Connect() {
 	log.Println("connected successfully to the database")
 }
 
-func Paginate(p Paginator) *gorm.DB {
+func Paginate(query *gorm.DB, p Paginator) *gorm.DB {
 	if p.Limit == 0 {
 		p.Limit = 10
 	}
@@ -49,8 +54,21 @@ func Paginate(p Paginator) *gorm.DB {
 		p.Page = 1
 	}
 
-	return db.Scopes(func(db *gorm.DB) *gorm.DB {
+	return query.Scopes(func(db *gorm.DB) *gorm.DB {
 		offset := (p.Page - 1) * p.Limit
 		return db.Offset(offset).Limit(p.Limit)
 	})
+}
+
+func Sort(query *gorm.DB, s Sorter) *gorm.DB {
+	if s.Column == "" {
+		return query
+	}
+
+	order := s.Column
+	if !s.Ascending {
+		order += " DESC"
+	}
+
+	return query.Order(order)
 }
