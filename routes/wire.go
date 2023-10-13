@@ -74,6 +74,17 @@ func CreateStripeController() *controllers.StripeController {
 	return &controllers.StripeController{}
 }
 
+func CreateSubscriptionsController() *controllers.SubscriptionsController {
+	wire.Build(
+		controllers.NewSubscriptionsController,
+		services.NewSubscriptionsService,
+		podcastUserStripeSet,
+		// WebhooksControllerSet,
+	)
+
+	return &controllers.SubscriptionsController{}
+}
+
 var podcastUserStripeSet = wire.NewSet(
 	services.NewPodcastsService,
 	repositories.NewPodcastsRepository,

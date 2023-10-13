@@ -80,6 +80,20 @@ func CreateStripeController() *controllers.StripeController {
 	return stripeController
 }
 
+func CreateSubscriptionsController() *controllers.SubscriptionsController {
+	db := database.Connection()
+	subscriptionsRepository := repositories.NewSubscriptionsRepository(db)
+	usersRepository := repositories.NewUsersRepository(db)
+	usersService := services.NewUsersService(usersRepository, subscriptionsRepository)
+	stripeGateway := stripe.NewStripeGateway()
+	stripeService := services.NewStripeService(stripeGateway, subscriptionsRepository, usersService)
+	podcastsRepository := repositories.NewPodcastsRepository(db)
+	podcastsService := services.NewPodcastsService(podcastsRepository, usersService, stripeService)
+	subscriptionsService := services.NewSubscriptionsService(subscriptionsRepository, usersService, stripeService, podcastsService)
+	subscriptionsController := controllers.NewSubscriptionsController(subscriptionsService)
+	return subscriptionsController
+}
+
 // wire.go:
 
 var podcastUserStripeSet = wire.NewSet(services.NewPodcastsService, repositories.NewPodcastsRepository, stripeServiceSet)

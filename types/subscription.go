@@ -10,3 +10,7 @@ type CreateSubscriptionInput struct {
 	StripeSubscriptionId string `json:"-" binding:"-"`
 	Status               string `json:"status" binding:"-"`
 }
+
+type SubscribeInput struct {
+	PodcastId string `json:"podcast_id" binding:"-"`
+}
