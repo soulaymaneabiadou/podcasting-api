@@ -102,55 +102,6 @@ func (ps *PodcastsService) GetPodcastCreator(id string) (types.User, error) {
 	return ps.us.GetUserById(fmt.Sprint(podcast.CreatorId))
 }
 
-func (ps *PodcastsService) Subscribe(uid, pid string) (string, error) {
-	podcast, err := ps.GetPodcastById(pid)
-	if err != nil {
-		return "", err
-	}
-
-	user, err := ps.us.GetUserById(uid)
-	if err != nil {
-		return "", err
-	}
-
-	sub, err := ps.us.GetUserSubscriptionByPodcast(user, fmt.Sprint(podcast.ID))
-	if err != nil {
-		return "", err
-	}
-
-	if sub.ID != 0 {
-		return "", errors.New("you have already subscribed to this podcast")
-	}
-
-	if user.StripeCustomerId == "" {
-		cus, err := ps.ss.CreateCustomer(user)
-		if err != nil {
-			return "", err
-		}
-		user, err = ps.us.SetUserCustomerId(user, cus.ID)
-		if err != nil {
-			return "", err
-		}
-	}
-
-	creator, err := ps.GetPodcastCreator(fmt.Sprint(podcast.ID))
-	if err != nil {
-		return "", err
-	}
-
-	url, err := ps.ss.CreateCustomerCheckoutSession(CustomerCheckoutSessionParams{
-		UserId:          fmt.Sprint(user.ID),
-		CustomerId:      user.StripeCustomerId,
-		StripeAccountId: creator.StripeAccountId,
-		PodcastId:       fmt.Sprint(podcast.ID),
-	})
-	if err != nil {
-		return "", err
-	}
-
-	return url, nil
-}
-
 func (ps *PodcastsService) GetPodcastByCreatorId(id string) (types.Podcast, error) {
 	podcast, err := ps.pr.GetByCreatorId(id)
 	if err != nil {

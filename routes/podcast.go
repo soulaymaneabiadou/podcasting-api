@@ -13,12 +13,10 @@ func podcastsRoutes(r *gin.RouterGroup) {
 	ec := CreateEpisodesController()
 
 	g.GET("/", pc.GetPodcasts)
-	g.GET("/slug/:pslug", pc.GetPodcastBySlug)
-	g.GET("slug/:pslug/episodes", ec.GetPodcastEpisodesBySlug)
+	g.GET("/slugs/:pslug", pc.GetPodcastBySlug)
+	g.GET("slugs/:pslug/episodes", ec.GetPodcastEpisodesBySlug)
 
 	g.Use(middleware.Authenticate())
-
-	g.POST("/:pid/subscribe", middleware.Authorize([]types.Role{types.LISTENER_ROLE}), pc.Subscribe)
 
 	g.Use(middleware.Authorize([]types.Role{types.CREATOR_ROLE}))
 

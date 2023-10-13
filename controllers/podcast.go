@@ -186,27 +186,6 @@ func (pc *PodcastsController) DeletePodcast(c *gin.Context) {
 	utils.SuccessResponse(c, res)
 }
 
-func (pc *PodcastsController) Subscribe(c *gin.Context) {
-	pid := c.Param("pid")
-	uid, _ := utils.GetCtxUser(c)
-
-	_, err := pc.ps.GetPodcastById(pid)
-	if err != nil {
-		utils.ErrorResponse(c, err, "The podcast you are trying to subscribe to does not exist")
-		return
-	}
-
-	url, err := pc.ps.Subscribe(uid, pid)
-	if err != nil {
-		utils.ErrorResponse(c, err, "Unable to subscribe to this podcast, please try again later with valid information")
-		return
-	}
-
-	// TODO: enable
-	// c.Redirect(http.StatusTemporaryRedirect, url)
-	utils.SuccessResponse(c, url)
-}
-
 func (pc *PodcastsController) GetPodcastByCreator(c *gin.Context) {
 	id := c.Param("id")
 
