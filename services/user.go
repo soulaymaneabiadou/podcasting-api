@@ -59,7 +59,7 @@ func (us *UsersService) SetStripeAccountId(user types.User, aid string) (types.U
 	return us.Update(user, types.UpdateUserInput{
 		StripeAccountId:  aid,
 		ChargesEnabled:   false,
-		TransfersEnabled: false,
+		PayoutsEnabled:   false,
 		DetailsSubmitted: false,
 	})
 }

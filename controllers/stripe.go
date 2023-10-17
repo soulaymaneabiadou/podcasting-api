@@ -31,7 +31,7 @@ func (sc *StripeController) Connect(c *gin.Context) {
 		return
 	}
 
-	if user.DetailsSubmitted && user.ChargesEnabled && user.TransfersEnabled {
+	if user.DetailsSubmitted && user.ChargesEnabled && user.PayoutsEnabled {
 		utils.ErrorResponse(c, err, "The user already has a completed account")
 		return
 	}
@@ -76,7 +76,7 @@ func (sc *StripeController) Onboard(c *gin.Context) {
 		return
 	}
 
-	if user.DetailsSubmitted && user.ChargesEnabled && user.TransfersEnabled {
+	if user.DetailsSubmitted && user.ChargesEnabled && user.PayoutsEnabled {
 		utils.ErrorResponse(c, err, "The user's account is already complete")
 		return
 	}

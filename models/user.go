@@ -21,7 +21,7 @@ type User struct {
 	StripeCustomerId    string    `json:"stripe_customer_id,omitempty" gorm:"type:varchar(255);default:NULL;unique"`
 	StripeAccountId     string    `json:"stripe_account_id,omitempty" gorm:"type:varchar(255);default:NULL;unique"`
 	ChargesEnabled      bool      `json:"charges_enabled,omitempty" gorm:"default:false"`
-	TransfersEnabled    bool      `json:"transfers_enabled,omitempty" gorm:"default:false"`
+	PayoutsEnabled      bool      `json:"payouts_enabled,omitempty" gorm:"default:false"`
 	DetailsSubmitted    bool      `json:"details_submitted,omitempty" gorm:"default:false"`
 	VerificationToken   string    `json:"-" gorm:"type:varchar(255);default:NULL;"`
 	Verified            bool      `json:"-" gorm:"default:false"`

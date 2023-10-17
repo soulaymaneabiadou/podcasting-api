@@ -113,7 +113,7 @@ func (ur *UsersRepository) Update(user types.User, input types.UpdateUserInput) 
 		StripeCustomerId:    input.StripeCustomerId,
 		StripeAccountId:     input.StripeAccountId,
 		ChargesEnabled:      input.ChargesEnabled,
-		TransfersEnabled:    input.TransfersEnabled,
+		PayoutsEnabled:      input.PayoutsEnabled,
 		DetailsSubmitted:    input.DetailsSubmitted,
 		VerificationToken:   input.VerificationToken,
 		Verified:            input.Verified,
