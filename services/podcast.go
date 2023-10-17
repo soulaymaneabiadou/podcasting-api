@@ -129,10 +129,6 @@ func (ps *PodcastsService) GetStats(id uint) (types.PodcastStats, error) {
 		return types.PodcastStats{}, err
 	}
 
-	// TODO:
-	// stripe stats
-
-	// construct stats
 	stats := types.PodcastStats{
 		TotalSubsCount:  subCount,
 		ActiveSubsCount: activeSubCount,
