@@ -20,7 +20,7 @@ func NewStripeController(ss *services.StripeService, us *services.UsersService) 
 	return &StripeController{ss: ss, us: us}
 }
 
-func (sc *StripeController) Connect(c *gin.Context) {
+func (sc *StripeController) CreateAccount(c *gin.Context) {
 	var acct *stripe.Account
 
 	id, _ := utils.GetCtxUser(c)
@@ -56,7 +56,7 @@ func (sc *StripeController) Connect(c *gin.Context) {
 		}
 	}
 
-	link, err := sc.ss.CreateAccountLink(acct)
+	link, err := sc.ss.CreateAccountOnboardingLink(acct)
 	if err != nil {
 		utils.ErrorResponse(c, err, "unable to create a stripe onboarding link, please check in later")
 		return
@@ -67,7 +67,7 @@ func (sc *StripeController) Connect(c *gin.Context) {
 	c.JSON(http.StatusOK, link.URL)
 }
 
-func (sc *StripeController) Onboard(c *gin.Context) {
+func (sc *StripeController) OnboardAccount(c *gin.Context) {
 	id, _ := utils.GetCtxUser(c)
 
 	user, err := sc.us.GetUserById(id)
@@ -87,7 +87,7 @@ func (sc *StripeController) Onboard(c *gin.Context) {
 		return
 	}
 
-	link, err := sc.ss.CreateAccountLink(acct)
+	link, err := sc.ss.CreateAccountOnboardingLink(acct)
 	if err != nil {
 		utils.ErrorResponse(c, err, "Unable to create an onboarding link, please try again later")
 		return
@@ -98,7 +98,32 @@ func (sc *StripeController) Onboard(c *gin.Context) {
 	c.JSON(http.StatusOK, link.URL)
 }
 
-func (sc *StripeController) CustomerPortal(c *gin.Context) {
+func (sc *StripeController) CreateAccountLogin(c *gin.Context) {
+	id, _ := utils.GetCtxUser(c)
+
+	user, err := sc.us.GetUserById(id)
+	if err != nil {
+		utils.ErrorResponse(c, err, "User not found")
+		return
+	}
+
+	if user.StripeAccountId == "" {
+		utils.ErrorResponse(c, err, "No connect account was found, please start by creating one through the connect flow")
+		return
+	}
+
+	link, err := sc.ss.CreateAccountLoginLink(user.StripeAccountId)
+	if err != nil {
+		utils.ErrorResponse(c, err, "Unable to create a login link for the connect account, please try again later")
+		return
+	}
+
+	// TODO: enable
+	// c.Redirect(http.StatusTemporaryRedirect, link.URL)
+	c.JSON(http.StatusOK, link.URL)
+}
+
+func (sc *StripeController) CreateCustomerPortal(c *gin.Context) {
 	id, _ := utils.GetCtxUser(c)
 
 	user, err := sc.us.GetUserById(id)
@@ -121,29 +146,4 @@ func (sc *StripeController) CustomerPortal(c *gin.Context) {
 	// TODO: enable
 	// c.Redirect(http.StatusTemporaryRedirect, session.URL)
 	c.JSON(http.StatusOK, session.URL)
-}
-
-func (sc *StripeController) ConnectAccount(c *gin.Context) {
-	id, _ := utils.GetCtxUser(c)
-
-	user, err := sc.us.GetUserById(id)
-	if err != nil {
-		utils.ErrorResponse(c, err, "User not found")
-		return
-	}
-
-	if user.StripeAccountId == "" {
-		utils.ErrorResponse(c, err, "No connect account was found, please start by creating one through the connect flow")
-		return
-	}
-
-	link, err := sc.ss.CreateConnectAccountLink(user.StripeAccountId)
-	if err != nil {
-		utils.ErrorResponse(c, err, "Unable to create an onboarding link, please try again later")
-		return
-	}
-
-	// TODO: enable
-	// c.Redirect(http.StatusTemporaryRedirect, link.URL)
-	c.JSON(http.StatusOK, link.URL)
 }

@@ -37,7 +37,7 @@ func (ss *StripeService) GetAccount(aid string) (*stripe.Account, error) {
 	return ss.sg.GetAccount(aid)
 }
 
-func (ss *StripeService) CreateAccountLink(acct *stripe.Account) (*stripe.AccountLink, error) {
+func (ss *StripeService) CreateAccountOnboardingLink(acct *stripe.Account) (*stripe.AccountLink, error) {
 	return ss.sg.CreateAccountOnboardingLink(acct, gateway.AccountLinkParams{
 		ReturnUrl:  os.Getenv("PUBLIC_URL") + "/api/v1/",
 		RefreshUrl: os.Getenv("PUBLIC_URL") + "/api/v1/stripe/connect",
@@ -70,7 +70,7 @@ func (ss *StripeService) CreateCustomerPortalSession(cid string) (*stripe.Billin
 	return session, err
 }
 
-func (ss *StripeService) CreateConnectAccountLink(aid string) (*stripe.LoginLink, error) {
+func (ss *StripeService) CreateAccountLoginLink(aid string) (*stripe.LoginLink, error) {
 	link, err := ss.sg.CreateAccountLoginLink(aid)
 
 	return link, err
