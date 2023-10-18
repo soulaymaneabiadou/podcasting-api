@@ -7,6 +7,7 @@ import (
 	"github.com/stripe/stripe-go/v75"
 	"github.com/stripe/stripe-go/v75/account"
 	"github.com/stripe/stripe-go/v75/accountlink"
+	"github.com/stripe/stripe-go/v75/balance"
 	"github.com/stripe/stripe-go/v75/loginlink"
 )
 
@@ -76,4 +77,13 @@ func (sg *StripeGateway) CreateAccountLoginLink(account string) (*stripe.LoginLi
 	l, err := loginlink.New(params)
 
 	return l, err
+}
+
+func (sg *StripeGateway) GetAccountBalance(accountId string) (*stripe.Balance, error) {
+	params := &stripe.BalanceParams{}
+	params.SetStripeAccount(accountId)
+
+	result, err := balance.Get(params)
+
+	return result, err
 }

@@ -15,6 +15,7 @@ func stripeRoutes(r *gin.RouterGroup) {
 	ag.POST("/connect", sc.CreateAccount)
 	ag.POST("/onboard", sc.OnboardAccount)
 	ag.POST("/login", sc.CreateAccountLogin)
+	ag.GET("/balances", sc.GetAccountBalance)
 
 	cg := g.Group("/customer", middleware.Authorize([]types.Role{types.LISTENER_ROLE}))
 	cg.POST("/portal", sc.CreateCustomerPortal)

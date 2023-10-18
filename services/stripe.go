@@ -76,6 +76,21 @@ func (ss *StripeService) CreateAccountLoginLink(aid string) (*stripe.LoginLink, 
 	return link, err
 }
 
+func (ss *StripeService) GetAccountBalance(accountId string) (types.StripeBalances, error) {
+	balances, err := ss.sg.GetAccountBalance(accountId)
+	if err != nil {
+		return types.StripeBalances{}, err
+	}
+
+	sb := types.StripeBalances{
+		Available:        balances.Available[0].Amount,
+		InstantAvailable: balances.InstantAvailable[0].Amount,
+		Pending:          balances.Pending[0].Amount,
+	}
+
+	return sb, nil
+}
+
 func (ss *StripeService) HandleWebhookEvent(event stripe.Event) {
 	switch event.Type {
 	case "customer.subscription.created":

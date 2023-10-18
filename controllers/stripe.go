@@ -147,3 +147,26 @@ func (sc *StripeController) CreateCustomerPortal(c *gin.Context) {
 	// c.Redirect(http.StatusTemporaryRedirect, session.URL)
 	c.JSON(http.StatusOK, session.URL)
 }
+
+func (sc *StripeController) GetAccountBalance(c *gin.Context) {
+	id, _ := utils.GetCtxUser(c)
+
+	user, err := sc.us.GetUserById(id)
+	if err != nil {
+		utils.ErrorResponse(c, err, "User not found")
+		return
+	}
+
+	if user.StripeAccountId == "" {
+		utils.ErrorResponse(c, err, "No connect account was found, please start by creating one through the connect flow")
+		return
+	}
+
+	balances, err := sc.ss.GetAccountBalance(user.StripeAccountId)
+	if err != nil {
+		utils.ErrorResponse(c, err, "Unable to get the account balances")
+		return
+	}
+
+	utils.SuccessResponse(c, balances)
+}
