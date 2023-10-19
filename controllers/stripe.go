@@ -170,3 +170,19 @@ func (sc *StripeController) GetAccountBalance(c *gin.Context) {
 
 	utils.SuccessResponse(c, balances)
 }
+
+func (sc *StripeController) PayoutAvailableBalance(c *gin.Context) {
+	accountId, err := utils.UserHasActiveStripeAccount(c, sc.us.GetUserById)
+	if err != nil || accountId == "" {
+		utils.ErrorResponse(c, err, "No active connect account was found, please start by creating and activating one")
+		return
+	}
+
+	err = sc.ss.PayoutToAccount(accountId)
+	if err != nil {
+		utils.ErrorResponse(c, err, "Unable to payout the balance")
+		return
+	}
+
+	utils.MessageResponse(c, "successefully paid the available balance")
+}

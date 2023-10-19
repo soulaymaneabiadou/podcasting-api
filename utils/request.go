@@ -1,9 +1,11 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
+	"podcast/types"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -24,4 +26,21 @@ func LimitRequestSize(c *gin.Context, maxMb int64) io.ReadCloser {
 func IsOwner(c *gin.Context, ownerId uint) bool {
 	id, _ := GetCtxUser(c)
 	return fmt.Sprint(ownerId) == id
+}
+
+func UserHasActiveStripeAccount(c *gin.Context, f func(string) (types.User, error)) (string, error) {
+	id, _ := GetCtxUser(c)
+
+	user, err := f(id)
+	if err != nil {
+		// utils.ErrorResponse(c, err, "User not found")
+		return "", err
+	}
+
+	if user.StripeAccountId == "" || user.PayoutsEnabled == false {
+		// utils.ErrorResponse(c, err, "No connect account was found, please start by creating one through the connect flow")
+		return "", errors.New("user has no active stripe account id")
+	}
+
+	return user.StripeAccountId, nil
 }
