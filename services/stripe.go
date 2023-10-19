@@ -2,6 +2,7 @@ package services
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	gateway "podcast/gateways/stripe"
@@ -138,4 +139,21 @@ func (ss *StripeService) HandleWebhookEvent(event stripe.Event) {
 	default:
 		fmt.Fprintf(os.Stderr, "unhandled stripe event type: %s\n", event.Type)
 	}
+}
+
+func (ss *StripeService) PayoutToAccount(accountId string) error {
+	b, err := ss.GetAccountBalance(accountId)
+	if err != nil {
+		return err
+	}
+
+	amount := b.Available + b.InstantAvailable
+
+	if amount == 0 {
+		return errors.New("no valid amount to payout")
+	}
+
+	_, err = ss.sg.CreatePayout(accountId, amount)
+
+	return err
 }

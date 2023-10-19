@@ -3,22 +3,30 @@ package stripe
 import (
 	"fmt"
 	"podcast/types"
+	"strings"
 
 	"github.com/stripe/stripe-go/v75"
 	"github.com/stripe/stripe-go/v75/account"
 	"github.com/stripe/stripe-go/v75/accountlink"
 	"github.com/stripe/stripe-go/v75/balance"
 	"github.com/stripe/stripe-go/v75/loginlink"
+	"github.com/stripe/stripe-go/v75/payout"
 )
 
 func (sg *StripeGateway) CreateAccount(u types.User) (*stripe.Account, error) {
+	nameParts := strings.Split(u.Name, " ")
+
 	params := &stripe.AccountParams{
 		Type:         stripe.String("express"),
 		Country:      stripe.String("US"),
 		Email:        stripe.String(u.Email),
 		Metadata:     map[string]string{"user_id": fmt.Sprint(u.ID)},
 		BusinessType: stripe.String("individual"),
-		Individual:   &stripe.PersonParams{Email: stripe.String(u.Email)},
+		Individual: &stripe.PersonParams{
+			Email:     stripe.String(u.Email),
+			FirstName: stripe.String(nameParts[0]),
+			LastName:  stripe.String(nameParts[1]),
+		},
 		BusinessProfile: &stripe.AccountBusinessProfileParams{
 			MCC:                stripe.String("5815"),
 			Name:               stripe.String(u.Name),
@@ -86,4 +94,18 @@ func (sg *StripeGateway) GetAccountBalance(accountId string) (*stripe.Balance, e
 	result, err := balance.Get(params)
 
 	return result, err
+}
+
+func (sg *StripeGateway) CreatePayout(accountId string, amount int64) (*stripe.Payout, error) {
+	p, err := payout.New(&stripe.PayoutParams{
+		Amount:   stripe.Int64(amount),
+		Currency: stripe.String("usd"),
+		Method:   stripe.String("instant"),
+		Params: stripe.Params{
+			StripeAccount: &accountId,
+		},
+		// Destination: nil,
+	})
+
+	return p, err
 }
