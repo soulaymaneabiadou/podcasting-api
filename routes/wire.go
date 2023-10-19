@@ -34,10 +34,7 @@ func CreatePodcastsController() *controllers.PodcastsController {
 	wire.Build(
 		controllers.NewPodcastsController,
 		podcastUserStripeSet,
-		wire.Bind(new(upload.FileHandler), new(*upload.LocalFileHandler)),
-		upload.NewLocalFileHandler,
-		// wire.Bind(new(upload.FileHandler), new(*upload.S3Handler)),
-		// upload.NewS3Handler,
+		fileUploadSet,
 	)
 
 	return &controllers.PodcastsController{}
@@ -49,6 +46,7 @@ func CreateEpisodesController() *controllers.EpisodesController {
 		services.NewEpisodesService,
 		repositories.NewEpisodesRepository,
 		podcastUserStripeSet,
+		fileUploadSet,
 	)
 
 	return &controllers.EpisodesController{}
@@ -98,4 +96,11 @@ var stripeServiceSet = wire.NewSet(
 	stripe.NewStripeGateway,
 	repositories.NewSubscriptionsRepository,
 	database.Connection,
+)
+
+var fileUploadSet = wire.NewSet(
+	wire.Bind(new(upload.FileHandler), new(*upload.LocalFileHandler)),
+	upload.NewLocalFileHandler,
+	// wire.Bind(new(upload.FileHandler), new(*upload.S3Handler)),
+	// upload.NewS3Handler,
 )

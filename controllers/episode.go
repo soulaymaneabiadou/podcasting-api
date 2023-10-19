@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
+	"time"
 
+	"podcast/gateways/upload"
 	"podcast/services"
 	"podcast/types"
 	"podcast/utils"
@@ -16,10 +19,15 @@ import (
 type EpisodesController struct {
 	es *services.EpisodesService
 	us *services.UsersService
+	fh upload.FileHandler
 }
 
-func NewEpisodesController(es *services.EpisodesService, us *services.UsersService) *EpisodesController {
-	return &EpisodesController{es: es, us: us}
+func NewEpisodesController(
+	es *services.EpisodesService,
+	us *services.UsersService,
+	fh upload.FileHandler,
+) *EpisodesController {
+	return &EpisodesController{es: es, us: us, fh: fh}
 }
 
 func (pc *EpisodesController) GetPodcastEpisodes(c *gin.Context) {
@@ -100,9 +108,29 @@ func (pc *EpisodesController) GetPodcastEpisodeBySlug(c *gin.Context) {
 
 func (pc *EpisodesController) CreatePodcastEpisode(c *gin.Context) {
 	var data types.CreateEpisodeInput
-	if err := c.ShouldBindJSON(&data); err != nil {
-		utils.ErrorResponse(c, err, "Please provide valid data to create this episode")
+
+	media, err := utils.HandleFileValidation(c, "media", []string{"mp3"}, 10)
+	if err != nil {
+		utils.ErrorResponse(c, err, "Please include an mp3 media that does not exceed 10MB")
 		return
+	}
+
+	mediaLink, err := pc.fh.Upload(media)
+	if err != nil {
+		utils.ErrorResponse(c, err, "An error occured while uploading the provided media file, please try again later")
+		return
+	}
+
+	data = types.CreateEpisodeInput{
+		Title:       c.PostForm("title"),
+		Description: c.PostForm("description"),
+		MediaLink:   mediaLink,
+		Visibility:  c.PostForm("visibility"),
+		Tags:        strings.Split(c.PostForm("tags"), ", "),
+	}
+
+	if data.Visibility != "draft" {
+		data.PublishedAt = time.Now()
 	}
 
 	user, _ := c.Get("user")
@@ -124,10 +152,35 @@ func (pc *EpisodesController) UpdatePodcastEpisode(c *gin.Context) {
 	id := c.Param("eid")
 	uid, _ := utils.GetCtxUser(c)
 
-	var data types.UpdateEpisodeInput
-	if err := c.ShouldBindJSON(&data); err != nil {
-		utils.ErrorResponse(c, err, "Please provide valid data to update this episode")
+	creatorId, err := strconv.ParseUint(id, 0, 32)
+	if err != nil || !utils.IsOwner(c, uint(creatorId)) {
+		utils.NotFoundResponse(c)
 		return
+	}
+
+	var data types.UpdateEpisodeInput
+	var mediaLink string
+
+	media, err := utils.HandleFileValidation(c, "media", []string{"mp3"}, 10)
+	if err != nil {
+		log.Println("no media file was uploaded")
+	}
+
+	if media != nil {
+		// TODO: delete old media if new one got uploaded
+		mediaLink, err = pc.fh.Upload(media)
+		if err != nil {
+			utils.ErrorResponse(c, err, "An error occured while uploading the provided media file, please try again later")
+			return
+		}
+	}
+
+	data = types.UpdateEpisodeInput{
+		Title:       c.PostForm("title"),
+		Description: c.PostForm("description"),
+		MediaLink:   mediaLink,
+		Visibility:  c.PostForm("visibility"),
+		Tags:        strings.Split(c.PostForm("tags"), ", "),
 	}
 
 	episode, err := pc.es.UpdatePodcastEpisode(uid, id, data)

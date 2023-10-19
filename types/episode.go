@@ -8,23 +8,25 @@ import (
 type Episode = models.Episode
 
 type CreateEpisodeInput struct {
-	Title       string             `json:"title" binding:"required,min=2"`
-	Description string             `json:"description" binding:"required,min=2"`
-	MediaLink   string             `json:"media_link" binding:"omitempty"`
-	Visibility  string             `json:"visibility" binding:"omitempty"`
-	Tags        models.StringSlice `json:"tags" binding:"omitempty"`
-	PublishedAt time.Time          `json:"-,omitempty" binding:"omitempty"`
-	CreatorId   uint               `json:"-" binding:"-"`
-	PodcastId   uint               `json:"-" binding:"-"`
+	Title       string             `form:"title" json:"title" binding:"required,min=2"`
+	Description string             `form:"description" json:"description" binding:"required,min=2"`
+	Media       string             `form:"media" json:"media" binding:"omitempty"`
+	MediaLink   string             `form:"-" json:"media_link" binding:"omitempty"`
+	Visibility  string             `form:"visibility" json:"visibility" binding:"omitempty"`
+	Tags        models.StringSlice `form:"tags" json:"tags" binding:"omitempty"`
+	PublishedAt time.Time          `form:"-,omitempty" json:"-,omitempty" binding:"omitempty"`
+	CreatorId   uint               `form:"-" json:"-" binding:"-"`
+	PodcastId   uint               `form:"-" json:"-" binding:"-"`
 }
 
 type UpdateEpisodeInput struct {
-	Title       string             `json:"title" binding:"omitempty"`
-	Description string             `json:"description" binding:"omitempty"`
-	MediaLink   string             `json:"media_link" binding:"omitempty"`
-	Visibility  string             `json:"visibility" binding:"omitempty"`
-	Tags        models.StringSlice `json:"tags" binding:"omitempty"`
-	PublishedAt time.Time          `json:"-" binding:"omitempty"`
+	Title       string             `form:"title" json:"title" binding:"omitempty"`
+	Description string             `form:"description" json:"description" binding:"omitempty"`
+	Media       string             `form:"media" json:"media" binding:"-"`
+	MediaLink   string             `form:"-" json:"-" binding:"omitempty"`
+	Visibility  string             `form:"visibility" json:"visibility" binding:"omitempty"`
+	Tags        models.StringSlice `form:"tags" json:"tags" binding:"omitempty"`
+	PublishedAt time.Time          `form:"-" json:"-" binding:"omitempty"`
 }
 
 type PublishEpisodeInput struct {
